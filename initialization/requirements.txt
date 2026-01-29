@@ -6,13 +6,14 @@ python-dotenv==1.2.1
 aiofiles==25.1.0
 aiohttp==3.13.3
 
-# --- DATABASE & ASYNC ---
+# --- DATABASE & ADMIN PANEL ---
 SQLAlchemy==2.0.36
 psycopg2-binary==2.9.10
 tortoise-orm==0.25.3
 aiosqlite==0.22.1
 asyncpg==0.31.0
-redis==7.1.0
+sqladmin==0.22.0
+WTForms==3.1.2
 
 # --- AI & LLM ---
 groq==0.37.1
@@ -24,14 +25,14 @@ langchain-google-genai
 langgraph
 google-genai==1.57.0
 
-# --- GOOGLE DRIVE & AUTH ---
+# --- GOOGLE DRIVE & AUTH (Unpinned for compatibility) ---
 google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
 
 # --- COMPUTER VISION & OCR ---
-# Using 'headless' to avoid Render display errors
+# Headless version is essential for Render
 opencv-python-headless==4.11.0.86
 paddleocr==2.7.3
 paddlepaddle==3.0.0b1
