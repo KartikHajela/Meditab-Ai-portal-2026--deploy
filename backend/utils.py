@@ -18,13 +18,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- IPv4 Force Fix for Render ---
+# --- IPv4 Force Fix for Render (Updated) ---
 class SMTP_SSL_IPv4(smtplib.SMTP_SSL):
     def _get_socket(self, host, port, timeout):
-        # Force the socket to use IPv4 (AF_INET) instead of trying IPv6
+        # FIX: If timeout is the default placeholder object, skip setting it
+        # (This prevents the 'object cannot be interpreted as integer' error)
+        if timeout is socket._GLOBAL_DEFAULT_TIMEOUT:
+            timeout = None
+
+        # Force IPv4 (AF_INET) to bypass Render's IPv6 issues
         new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        new_socket.settimeout(timeout)
+        
+        # Only set timeout if it is a valid number or None
+        if timeout is not None:
+            new_socket.settimeout(timeout)
+            
         new_socket.connect((host, port))
-        # Wrap the socket with SSL
+        # Wrap with SSL using the context you passed
         return self.context.wrap_socket(new_socket, server_hostname=host)
 
 # --- 1. CENTRALIZED PATHS ---
