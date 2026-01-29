@@ -9,10 +9,20 @@ import hashlib
 import models
 import smtplib
 import ssl
+import socket
 from email.message import EmailMessage
 from sqlalchemy.orm import Session
 import string
 
+# --- IPv4 Force Fix for Render ---
+class SMTP_SSL_IPv4(smtplib.SMTP_SSL):
+    def _get_socket(self, host, port, timeout):
+        # Force the socket to use IPv4 (AF_INET) instead of trying IPv6
+        new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        new_socket.settimeout(timeout)
+        new_socket.connect((host, port))
+        # Wrap the socket with SSL
+        return self.context.wrap_socket(new_socket, server_hostname=host)
 
 # --- 1. CENTRALIZED PATHS ---
 base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -142,7 +152,7 @@ def send_otp_email(receiver_email: str, otp: str):
     context = ssl.create_default_context()
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        with SMTP_SSL_IPv4("smtp.gmail.com", 465, context=context) as server:
             server.login(sender, app_password)
             server.send_message(msg)
         print(f"✅ OTP sent to {receiver_email}")
@@ -180,7 +190,7 @@ def send_reset_link(receiver_email: str, link: str):
 
     context = ssl.create_default_context()
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        with SMTP_SSL_IPv4("smtp.gmail.com", 465, context=context) as server:
             server.login(sender, app_password)
             server.send_message(msg)
         return True
