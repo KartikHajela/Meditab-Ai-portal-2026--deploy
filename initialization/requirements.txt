@@ -39,6 +39,8 @@ google-auth-oauthlib
 opencv-python-headless==4.11.0.86
 paddleocr==2.7.3
 paddlepaddle==3.0.0b1
+paddleocr==2.7.3
+paddlepaddle==3.0.0b1
 Pillow==12.1.0
 
 # --- PDF & DOCUMENT PROCESSING ---
