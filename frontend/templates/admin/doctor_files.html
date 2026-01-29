@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drive Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f8fafd; --surface: #ffffff; --text: #1f1f1f; --border: #e0e3e7;
+            --hover: #f0f4f9; --primary: #c2e7ff; --primary-text: #001d35;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #111315; --surface: #1e1f20; --text: #e2e2e6; --border: #444746; --hover: #2c2c2c; --primary: #004a77; --primary-text: #c2e7ff; }
+        }
+        body { font-family: 'Google Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
+        
+        .sidebar { width: 250px; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
+        .new-btn { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-radius: 16px; padding: 15px 20px; width: fit-content; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; cursor: pointer; transition: 0.2s; color: var(--text); font-weight: 500; border: none; }
+        .new-btn:hover { background: #ebf2fa; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .side-link { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 100px; text-decoration: none; color: var(--text); font-size: 14px; }
+        .side-link.active { background: var(--primary); color: var(--primary-text); font-weight: 500; }
+
+        .content { flex: 1; background: var(--surface); margin: 15px 15px 15px 0; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        .toolbar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .search-bar { background: var(--bg); padding: 10px 20px; border-radius: 100px; width: 400px; display: flex; align-items: center; gap: 10px; color: var(--text); }
+        .search-bar input { border: none; background: transparent; outline: none; flex: 1; color: inherit; font-family: inherit; }
+
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; overflow-y: auto; padding-right: 10px; }
+        
+        .file-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: 0.2s; text-decoration: none; color: inherit; position: relative; }
+        .file-card:hover { background: var(--hover); border-color: transparent; }
+        .file-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .file-preview { height: 120px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-size: 40px; }
+        .file-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .drive-pill { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="/" style="text-decoration:none; margin-bottom:10px;"><h2 style="margin:0 10px; font-size:22px; color:var(--text)">Drive</h2></a>
+        <button class="new-btn" onclick="window.location.href='/doctor-app/{{ user_hash }}'">
+            <span class="material-symbols-outlined" style="font-size: 24px;">add</span>
+            <span>Upload New</span>
+        </button>
+        <a href="/doctor-app/{{ user_hash }}" class="side-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+        <a href="#" class="side-link active"><span class="material-symbols-outlined">hard_drive</span>My Drive</a>
+        <a href="/doctor-app/{{ user_hash }}/chats" class="side-link"><span class="material-symbols-outlined">chat</span>Chat Logs</a>
+    </div>
+
+    <div class="content">
+        <div class="toolbar">
+            <div style="font-size: 18px;">Welcome to Cloud Vault</div>
+            <div class="search-bar">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" placeholder="Search in Drive">
+                <span class="material-symbols-outlined">tune</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <span class="material-symbols-outlined" style="opacity:0.6">help</span>
+                <span class="material-symbols-outlined" style="opacity:0.6">settings</span>
+            </div>
+        </div>
+
+        <div style="font-size: 12px; font-weight: 500; margin-bottom: 15px; opacity: 0.7;">Files</div>
+        <div class="file-grid">
+            {% for file in files %}
+            <a href="{{ file.webViewLink }}" target="_blank" class="file-card">
+                <div class="file-card-header">
+                    <span class="material-symbols-outlined" style="color:#0b57d0">description</span>
+                    <span class="material-symbols-outlined" style="font-size:18px; opacity:0.5">more_vert</span>
+                </div>
+                <div class="file-preview">
+                    {% if 'image' in file.mimeType %}🖼️
+                    {% elif 'audio' in file.mimeType %}🎧
+                    {% elif 'pdf' in file.mimeType %}📕
+                    {% else %}📄{% endif %}
+                </div>
+                <div class="file-name">{{ file.name }}</div>
+                <div class="drive-pill">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" width="12"> Drive
+                </div>
+            </a>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;">
+                <span class="material-symbols-outlined" style="font-size: 64px;">folder_off</span>
+                <p>No files found in the connected Drive folder.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

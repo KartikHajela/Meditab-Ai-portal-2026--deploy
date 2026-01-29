@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Portal - Meditab</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="static/css/home_styles.css">
+    <style>
+        /* --- DOCTOR PORTAL SPECIFIC CSS EXTENSIONS --- */
+        
+        /* 1. Availability Switch in Top Bar */
+        .status-toggle {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg-input); padding: 6px 12px; border-radius: 20px;
+            cursor: pointer; border: 1px solid var(--border); transition: 0.2s;
+        }
+        .status-toggle.online { background: #e6f4ea; border-color: #ceead6; color: #137333; }
+        .status-toggle.online .toggle-dot { background: #1e8e3e; box-shadow: 0 0 8px #1e8e3e; }
+        .toggle-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-sub); transition: 0.2s; }
+
+        /* 2. Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px; display: flex; flex-direction: column; gap: 4px;
+        }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-main); }
+        .stat-label { font-size: 0.85rem; color: var(--text-sub); font-weight: 500; }
+
+        /* 3. Patient Queue Table */
+        .queue-container { background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .queue-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .queue-table th { padding: 16px; background: var(--bg-hover); color: var(--text-sub); font-size: 0.8rem; font-weight: 600; }
+        .queue-table td { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 0.9rem; }
+        .queue-table tr:hover { background: var(--bg-hover); cursor: pointer; }
+        .queue-table tr:last-child td { border-bottom: none; }
+        
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .status-badge.critical { background: #fce8e6; color: #c5221f; }
+        .status-badge.triage { background: #fff7e0; color: #ea8600; }
+        .status-badge.stable { background: #e6f4ea; color: #137333; }
+        
+        .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
+
+        /* 4. SPLIT SCREEN WORKSPACE */
+        .workspace-layout { display: flex; height: calc(100vh - 80px); gap: 0; overflow: hidden; }
+        
+        /* Left Panel (Read Only) */
+        .panel-left { width: 40%; border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; background: var(--bg-sidebar); }
+        
+        /* Right Panel (Actions) */
+        .panel-right { width: 60%; display: flex; flex-direction: column; background: var(--bg-body); position: relative; }
+
+        /* AI Clinical Summary Box */
+        .ai-summary-box {
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.05), rgba(155, 114, 203, 0.05));
+            border: 1px solid #d3e3fd; border-radius: 12px; padding: 16px; margin-bottom: 20px;
+        }
+        .ai-header { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: #0b57d0; margin-bottom: 8px; }
+
+        /* Media Grid */
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
+        .media-item { 
+            aspect-ratio: 1; background: var(--bg-input); border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: 1px solid transparent; transition: 0.2s; flex-direction: column; gap: 4px;
+        }
+        .media-item:hover { border-color: #4285f4; background: var(--bg-hover); }
+
+        /* Action Tabs (Right Panel) */
+        .action-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; }
+        .tab-btn { padding: 16px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-sub); font-weight: 500; }
+        .tab-btn.active { color: #0b57d0; border-bottom-color: #0b57d0; }
+
+        .action-content { padding: 20px; flex: 1; overflow-y: auto; }
+
+        /* Prescription Form */
+        .rx-row { display: grid; grid-template-columns: 2fr 1fr 1fr 30px; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .add-rx-btn { color: #0b57d0; background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0; display: flex; align-items: center; gap: 4px;}
+
+        /* Sticky Footer */
+        .action-footer {
+            padding: 16px 24px; border-top: 1px solid var(--border); background: var(--bg-body);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* 5. BLAST MODAL (Emergency) */
+        .blast-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .blast-modal.active { display: flex; }
+        .blast-card {
+            background: #1e1f20; border: 2px solid #d93025; box-shadow: 0 0 50px rgba(217, 48, 37, 0.4);
+            width: 90%; max-width: 500px; padding: 30px; border-radius: 24px; text-align: center;
+            color: white; animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        
+        .blast-header { color: #ffb4ab; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        .blast-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+        .btn-blast-primary { background: #d93025; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 1.1rem; cursor: pointer; }
+        .btn-blast-primary:hover { background: #b31d12; box-shadow: 0 0 20px rgba(217, 48, 37, 0.6); }
+        .btn-blast-secondary { background: transparent; border: 1px solid #5f6368; color: #e3e3e3; padding: 16px; border-radius: 12px; cursor: pointer; }
+        .btn-blast-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-title">
+                    <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 182"><path d="M91 0C40.7 0 0 40.7 0 91s40.7 91 91 91 91-40.7 91-91S141.3 0 91 0z" fill="currentColor"/></svg>
+                    <span>MediDoctor</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-scroll-content custom-scroll">
+                <div class="group-label">Practice</div>
+                <div class="sidebar-file-item" onclick="switchView('dashboard')" style="background: var(--bg-hover);">
+                    <span class="material-symbols-outlined file-icon-small">dashboard</span>
+                    <span class="file-name-small">Command Center</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">groups</span>
+                    <span class="file-name-small">My Patients</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">calendar_month</span>
+                    <span class="file-name-small">Schedule</span>
+                </div>
+                
+                <div class="group-label">Intelligence</div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">analytics</span>
+                    <span class="file-name-small">Trends & Analytics</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar-small">D</div>
+                    <div style="font-size: 0.9rem; font-weight: 500;">Dr. Smith</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <span class="material-symbols-outlined">dock_to_left</span>
+                    </button>
+                    <div class="chat-title" id="pageTitle">
+                        Command Center
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="status-toggle online" id="statusToggle" onclick="toggleStatus()">
+                        <div class="toggle-dot"></div>
+                        <span style="font-size: 0.85rem; font-weight: 600;" id="statusText">Available</span>
+                    </div>
+
+                    <div class="header-avatar">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </div>
+                    <div class="header-avatar">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="view-dashboard" class="custom-scroll" style="padding: 24px; height: calc(100vh - 60px); overflow-y: auto;">
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" style="color:#0b57d0">5</span>
+                        <span class="stat-label">My Active Cases</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" style="color:#d93025">2</span>
+                        <span class="stat-label">Waiting in Triage (High Priority)</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">12m</span>
+                        <span class="stat-label">Avg. Response Time</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin:0; font-weight: 600;">Patient Queue</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="mini-action-pill" style="border:1px solid var(--border); background: var(--bg-body); padding: 6px 12px; border-radius: 8px; cursor: pointer;">
+                            Filter: All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="queue-container">
+                    <table class="queue-table">
+                        <thead>
+                            <tr>
+                                <th>STATUS</th>
+                                <th>PATIENT</th>
+                                <th>AI TRIAGE SUMMARY</th>
+                                <th>WAIT TIME</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="openCase('123')">
+                                <td><div class="status-badge critical"><div class="pulse-dot"></div> EMERGENCY</div></td>
+                                <td><strong>John Doe</strong><br><span style="font-size:0.8rem; opacity:0.7">Male, 54</span></td>
+                                <td>Chest pain, radiating to left arm. History of hypertension.</td>
+                                <td style="color: #d93025; font-weight: 600;">00:04:12</td>
+                                <td><button class="send-btn" style="width: 32px; height: 32px;"><span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span></button></td>
+                            </tr>
+                            <tr onclick="openCase('124')">
+                                <td><div class="status-badge triage">New Assignment</div></td>
+                                <td><strong>Sarah Smith</strong><br><span style="font-size:0.8rem; opacity:0.7">Female, 28</span></td>
+                                <td>Severe dermatitis flare-up. Uploaded images.</td>
+                                <td>00:12:30</td>
+                                <td><button class="send-btn" style="width: 32px; height: 32px; background: var(--bg-element);"><span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <br>
+                <button onclick="triggerBlastModal()" style="opacity: 0.3; font-size: 0.8rem;">(Demo: Trigger Emergency Event)</button>
+            </div>
+
+            <div id="view-workspace" class="workspace-layout" style="display: none;">
+                
+                <div class="panel-left custom-scroll">
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                        <div class="avatar-large" style="width: 48px; height: 48px; font-size: 1.2rem;">J</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1.1rem;">John Doe</div>
+                            <div style="font-size: 0.85rem; color: var(--text-sub);">Male, 54 • ID: #88219</div>
+                        </div>
+                        <button class="mini-action-pill" style="margin-left: auto; height: 32px; border: 1px solid var(--border);">History</button>
+                    </div>
+
+                    <div class="ai-summary-box">
+                        <div class="ai-header">
+                            <span class="material-symbols-outlined">auto_awesome</span>
+                            AI Clinical Snapshot
+                        </div>
+                        <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main);">
+                            <strong>Chief Complaint:</strong> Acute chest pain (7/10 severity).<br>
+                            <strong>Vitals:</strong> HR 110 (High), BP 150/95.<br>
+                            <strong>Flags:</strong> <span style="color: #d93025;">Potential Cardiac Event</span>. Patient mentions missed medication yesterday.
+                        </div>
+                    </div>
+
+                    <div class="group-label" style="margin: 0 0 10px 0;">Attached Evidence</div>
+                    <div class="media-grid">
+                        <div class="media-item">
+                            <span class="material-symbols-outlined" style="color: #d93025;">picture_as_pdf</span>
+                            <span style="font-size: 0.7rem;">ECG_Report</span>
+                        </div>
+                        <div class="media-item">
+                            <span class="material-symbols-outlined">image</span>
+                            <span style="font-size: 0.7rem;">Prev_Rx</span>
+                        </div>
+                    </div>
+
+                    <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
+
+                    <div class="group-label">Patient Chat History</div>
+                    <div class="message-row user" style="font-size: 0.85rem; margin-top: 10px;">
+                        <div class="msg-bubble" style="background: var(--bg-hover);">It started about an hour ago. Heavy pressure.</div>
+                    </div>
+                    <div class="message-row ai" style="font-size: 0.85rem; margin-top: 10px;">
+                        <div class="msg-content">Does the pain radiate to your arm or jaw?</div>
+                    </div>
+                    <div class="message-row user" style="font-size: 0.85rem; margin-top: 10px;">
+                        <div class="msg-bubble" style="background: var(--bg-hover);">Yes, slightly to the left arm.</div>
+                    </div>
+                </div>
+
+                <div class="panel-right">
+                    <div class="action-tabs">
+                        <button class="tab-btn active" onclick="switchTab('notes')">Clinical Notes</button>
+                        <button class="tab-btn" onclick="switchTab('rx')">Prescription</button>
+                        <button class="tab-btn" onclick="switchTab('chat')">Live Chat</button>
+                    </div>
+
+                    <div id="tab-notes" class="action-content custom-scroll">
+                        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 8px;">Diagnosis & Observations</label>
+                        <textarea class="form-input" style="width: 100%; height: 300px; resize: none; font-family: inherit; line-height: 1.6;" placeholder="Type findings here..."></textarea>
+                    </div>
+
+                    <div id="tab-rx" class="action-content custom-scroll" style="display: none;">
+                        <div class="rx-row" style="font-weight: 600; font-size: 0.8rem; color: var(--text-sub);">
+                            <span>Drug Name</span>
+                            <span>Dosage</span>
+                            <span>Frequency</span>
+                            <span></span>
+                        </div>
+                        <div id="rx-list">
+                            <div class="rx-row">
+                                <input type="text" class="form-input" placeholder="e.g. Aspirin">
+                                <input type="text" class="form-input" placeholder="325mg">
+                                <input type="text" class="form-input" placeholder="Once">
+                                <button style="background:none; border:none; color:var(--text-sub); cursor:pointer;"><span class="material-symbols-outlined">delete</span></button>
+                            </div>
+                        </div>
+                        <button class="add-rx-btn" onclick="addRxRow()">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span> Add Medication
+                        </button>
+                    </div>
+
+                    <div class="action-footer">
+                        <button class="emergency-btn" style="width: auto; margin: 0; background: #fce8e6; color: #d93025; border: none;" onclick="triggerBlastModal()">
+                            <span class="material-symbols-outlined">e911_emergency</span> Escalate (911)
+                        </button>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button class="modal-btn secondary" onclick="switchView('dashboard')">Save Draft</button>
+                            <button class="save-btn" style="margin: 0;">
+                                <span class="material-symbols-outlined">done_all</span> Discharge & Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="blastModal" class="blast-modal">
+        <div class="blast-card">
+            <div class="blast-header">
+                <span class="material-symbols-outlined" style="font-size: 32px;">warning</span>
+                Critical Emergency
+            </div>
+            <h2 style="font-size: 2rem; margin: 10px 0;">Incoming Case</h2>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Patient detected with <strong>High Risk Cardiac Symptoms</strong>.</p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin-top: 20px; text-align: left;">
+                <div style="font-size: 0.85rem; opacity: 0.7;">AI TRIAGE</div>
+                <div style="font-weight: 600; font-size: 1.1rem;">"Male, 62. Sudden collapse, breathing difficulty. Pulse irregular."</div>
+            </div>
+
+            <div class="blast-actions">
+                <button class="btn-blast-secondary" onclick="closeBlast()">Decline / Busy</button>
+                <button class="btn-blast-primary" onclick="acceptEmergency()">ACCEPT CASE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. NAVIGATION LOGIC ---
+        function switchView(view) {
+            const dash = document.getElementById('view-dashboard');
+            const work = document.getElementById('view-workspace');
+            const title = document.getElementById('pageTitle');
+            
+            if (view === 'dashboard') {
+                dash.style.display = 'block';
+                work.style.display = 'none';
+                title.innerText = "Command Center";
+            } else {
+                dash.style.display = 'none';
+                work.style.display = 'flex'; // Flex for split layout
+                title.innerText = "Case #123: John Doe";
+            }
+        }
+
+        function openCase(id) {
+            // In real app, fetch case data using ID
+            switchView('workspace');
+        }
+
+        // --- 2. WORKSPACE TABS ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.action-content').forEach(el => el.style.display = 'none');
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Activate selected
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function addRxRow() {
+            const list = document.getElementById('rx-list');
+            const row = document.createElement('div');
+            row.className = 'rx-row';
+            row.innerHTML = `
+                <input type="text" class="form-input" placeholder="Drug Name">
+                <input type="text" class="form-input" placeholder="Dosage">
+                <input type="text" class="form-input" placeholder="Freq">
+                <button style="background:none; border:none; color:var(--text-sub); cursor:pointer;" onclick="this.parentElement.remove()"><span class="material-symbols-outlined">delete</span></button>
+            `;
+            list.appendChild(row);
+        }
+
+        // --- 3. AVAILABILITY TOGGLE ---
+        function toggleStatus() {
+            const el = document.getElementById('statusToggle');
+            const txt = document.getElementById('statusText');
+            if (el.classList.contains('online')) {
+                el.classList.remove('online');
+                txt.innerText = "Offline / Busy";
+                el.style.background = "var(--bg-hover)";
+                el.querySelector('.toggle-dot').style.background = "#d93025";
+                el.querySelector('.toggle-dot').style.boxShadow = "none";
+            } else {
+                el.classList.add('online');
+                txt.innerText = "Available";
+                el.querySelector('.toggle-dot').style.background = "#1e8e3e";
+                el.querySelector('.toggle-dot').style.boxShadow = "0 0 8px #1e8e3e";
+            }
+        }
+
+        // --- 4. BLAST MODAL (Socket Simulation) ---
+        function triggerBlastModal() {
+            const modal = document.getElementById('blastModal');
+            modal.classList.add('active');
+            // Optional: Play sound here
+            // new Audio('/static/media/alert.mp3').play();
+        }
+
+        function closeBlast() {
+            document.getElementById('blastModal').classList.remove('active');
+        }
+
+        function acceptEmergency() {
+            closeBlast();
+            openCase('emergency');
+        }
+
+        // --- Sidebar Logic from Home.html ---
+        function toggleSidebar() {
+            const sb = document.getElementById("sidebar");
+            if (sb.style.marginLeft === "-280px") {
+                sb.style.marginLeft = "0";
+            } else {
+                sb.style.marginLeft = "-280px";
+            }
+        }
+    </script>
+</body>
+</html>

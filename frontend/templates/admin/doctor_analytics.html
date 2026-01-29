@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditab Pro - Physician Console</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="{{ url_for('static', path='css/home_styles.css') }}">
+
+    <style>
+        /* =========================================
+           DOCTOR CONSOLE SPECIFIC EXTENSIONS
+           (Inherits vars from home_styles.css)
+           ========================================= */
+
+        /* --- DASHBOARD GRID --- */
+        .dash-container {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            gap: 24px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .dash-left-col { display: flex; flex-direction: column; gap: 24px; overflow-y: auto; padding-right: 4px; }
+        .dash-right-col { display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
+
+        /* --- STAT CARDS --- */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        
+        .stat-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            height: 130px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); background: var(--bg-hover); }
+        
+        .stat-icon-wrapper {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 12px;
+        }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-main); line-height: 1; }
+        .stat-label { font-size: 0.85rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-meta { font-size: 0.75rem; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+
+        /* --- TRIAGE QUEUE TABLE --- */
+        .panel-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-sidebar);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .panel-title { font-weight: 600; color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+
+        .triage-table { width: 100%; border-collapse: collapse; }
+        .triage-table th { 
+            text-align: left; padding: 12px 20px; 
+            color: var(--text-sub); font-size: 0.75rem; font-weight: 600; 
+            text-transform: uppercase; border-bottom: 1px solid var(--border); 
+        }
+        .triage-table td { 
+            padding: 16px 20px; border-bottom: 1px solid var(--border); 
+            color: var(--text-main); font-size: 0.9rem; vertical-align: middle;
+        }
+        .triage-table tr:hover { background: var(--bg-hover); cursor: pointer; }
+        .triage-table tr:last-child td { border-bottom: none; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge.critical { background: #fce8e6; color: #d93025; border: 1px solid #f9d7d4; }
+        .badge.warning { background: #fef7e0; color: #ea8600; border: 1px solid #fceec5; }
+        .badge.stable { background: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+
+        /* --- WORKSPACE (SPLIT VIEW) --- */
+        .workspace-layout {
+            display: flex; height: 100%; overflow: hidden;
+            background: var(--bg-body);
+        }
+
+        /* Patient Context (Left) */
+        .ws-sidebar {
+            width: 320px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            flex-shrink: 0;
+        }
+        
+        .patient-card { padding: 20px; border-bottom: 1px solid var(--border); }
+        .patient-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+        .patient-avatar { 
+            width: 56px; height: 56px; border-radius: 12px; 
+            background: linear-gradient(135deg, #4285f4, #1967d2); 
+            color: white; font-size: 1.5rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+        .info-item { display: flex; flex-direction: column; gap: 2px; }
+        .info-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; }
+        .info-val { font-size: 0.9rem; font-weight: 500; color: var(--text-main); }
+
+        /* Clinical Tabs (Right) */
+        .ws-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .clinical-tabs {
+            display: flex; gap: 24px; padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-body);
+        }
+        .tab-btn {
+            padding: 16px 0; background: none; border: none;
+            color: var(--text-sub); font-weight: 500; font-size: 0.9rem;
+            cursor: pointer; border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .tab-btn.active { color: #0b57d0; border-bottom-color: #0b57d0; font-weight: 600; }
+        .tab-btn:hover:not(.active) { color: var(--text-main); }
+
+        .tab-content { padding: 24px; overflow-y: auto; flex: 1; display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+        /* Rich Text Editor Simulation */
+        .editor-toolbar {
+            display: flex; gap: 8px; padding: 10px; background: var(--bg-hover);
+            border: 1px solid var(--border); border-bottom: none;
+            border-radius: 8px 8px 0 0;
+        }
+        .editor-btn {
+            width: 32px; height: 32px; border: none; background: transparent;
+            border-radius: 4px; cursor: pointer; color: var(--text-sub);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .editor-btn:hover { background: rgba(0,0,0,0.1); color: var(--text-main); }
+        
+        .clinical-textarea {
+            width: 100%; min-height: 400px;
+            padding: 20px; background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            font-family: 'Georgia', serif; font-size: 1.05rem; line-height: 1.6;
+            resize: none; color: var(--text-main);
+        }
+        .clinical-textarea:focus { border-color: #0b57d0; box-shadow: 0 0 0 2px rgba(11, 87, 208, 0.1); }
+
+        /* --- ALERTS & TOASTS --- */
+        .blast-modal {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center;
+        }
+        .blast-card {
+            background: #1f1f1f; color: white; width: 90%; max-width: 500px;
+            border: 2px solid #d93025; border-radius: 20px; padding: 32px;
+            text-align: center; box-shadow: 0 0 60px rgba(217, 48, 37, 0.4);
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 5000; display: flex; flex-direction: column; gap: 12px; }
+        .toast {
+            background: var(--bg-popover); border: 1px solid var(--border);
+            color: var(--text-main); padding: 16px 20px; border-radius: 12px;
+            box-shadow: var(--shadow-float); display: flex; align-items: center; gap: 12px;
+            transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 300px;
+        }
+        .toast.show { transform: translateX(0); }
+
+        /* Utilities */
+        .divider { height: 1px; background: var(--border); margin: 16px 0; width: 100%; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-title">
+                    <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 182"><path d="M91 0C40.7 0 0 40.7 0 91s40.7 91 91 91 91-40.7 91-91S141.3 0 91 0z" fill="currentColor"/></svg>
+                    <span>Meditab Pro</span>
+                </div>
+            </div>
+
+            <button class="new-chat-btn" onclick="switchView('dashboard')">
+                <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span> 
+                <span>Command Center</span>
+            </button>
+
+            <div class="sidebar-scroll-content custom-scroll">
+                
+                <div class="group-label">Quick Actions</div>
+                <div class="sidebar-file-item" onclick="triggerBlastModal()">
+                    <span class="material-symbols-outlined file-icon-small" style="color:#d93025">campaign</span>
+                    <span class="file-name-small">Broadcast Alert</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">calendar_month</span>
+                    <span class="file-name-small">My Schedule</span>
+                </div>
+
+                <div class="files-widget collapsed" id="activeCasesWidget" style="margin-top: 10px;">
+                    <div class="files-header" onclick="toggleSection('activeCasesWidget')">
+                        <div class="group-label">My Active Cases</div>
+                        <span class="material-symbols-outlined toggle-arrow">expand_more</span>
+                    </div>
+                    <div class="files-list custom-scroll" style="display:block; max-height:none;">
+                        <div class="sidebar-file-item" onclick="openPatient('123')">
+                            <span class="material-symbols-outlined file-icon-small">person_alert</span>
+                            <div class="file-name-small">
+                                <strong>John Doe</strong>
+                                <div style="font-size:10px; opacity:0.6;">Chest Pain • 12m ago</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-file-item" onclick="openPatient('124')">
+                            <span class="material-symbols-outlined file-icon-small">person</span>
+                            <div class="file-name-small">
+                                <strong>Sarah Smith</strong>
+                                <div style="font-size:10px; opacity:0.6;">Follow-up • 1h ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar-small">DR</div>
+                    <div style="font-size: 0.9rem; font-weight: 500;">Dr. Smith</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <span class="material-symbols-outlined">dock_to_left</span>
+                    </button>
+                    <div class="chat-title" id="pageTitle">
+                        Command Center
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="mini-action-pill" id="statusBtn" onclick="toggleStatus()" style="display:flex; align-items:center; gap:8px; background:#e6f4ea; color:#137333; border:none; padding:8px 12px; border-radius:20px; font-weight:600; cursor:pointer;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">circle</span>
+                        <span>Available</span>
+                    </button>
+
+                    <div class="header-avatar">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </div>
+                    <div class="header-avatar">
+                        <span class="material-symbols-outlined">settings</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="view-dashboard" class="dash-container custom-scroll">
+                
+                <div class="dash-left-col">
+                    <div class="stat-grid">
+                        <div class="stat-card" style="border-left: 4px solid #4285f4;">
+                            <div class="stat-icon-wrapper" style="background: #e8f0fe; color: #1967d2;">
+                                <span class="material-symbols-outlined">stethoscope</span>
+                            </div>
+                            <div>
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">Active Cases</div>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="border-left: 4px solid #ea8600;">
+                            <div class="stat-icon-wrapper" style="background: #fef7e0; color: #ea8600;">
+                                <span class="material-symbols-outlined">timer</span>
+                            </div>
+                            <div>
+                                <div class="stat-value">12<span style="font-size:1rem; opacity:0.7">m</span></div>
+                                <div class="stat-label">Avg Wait</div>
+                                <div class="stat-meta" style="color:var(--text-sub)">-2m vs avg</div>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="border-left: 4px solid #d93025;">
+                            <div class="stat-icon-wrapper" style="background: #fce8e6; color: #d93025;">
+                                <span class="material-symbols-outlined">e911_emergency</span>
+                            </div>
+                            <div>
+                                <div class="stat-value">1</div>
+                                <div class="stat-label">Critical</div>
+                                <div class="stat-meta" style="color:#d93025">Requires Action</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card" style="flex:1;">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="material-symbols-outlined" style="color:var(--text-sub)">queue</span>
+                                Patient Queue (Triage)
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="mini-action-pill" style="border:1px solid var(--border); background:var(--bg-body); cursor:pointer; padding:6px 12px; border-radius:6px; font-size:0.8rem;">Filter</button>
+                            </div>
+                        </div>
+                        <table class="triage-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Patient</th>
+                                    <th>AI Summary (Chief Complaint)</th>
+                                    <th>Wait</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="openPatient('123')">
+                                    <td><span class="badge critical">Critical</span></td>
+                                    <td><strong>John Doe</strong><div style="font-size:0.75rem; opacity:0.6">54M • #88219</div></td>
+                                    <td>Chest Pain radiating to arm. History of HTN.</td>
+                                    <td style="color:#d93025; font-weight:600">08:24</td>
+                                    <td><span class="material-symbols-outlined" style="color:var(--text-sub)">arrow_forward</span></td>
+                                </tr>
+                                <tr onclick="openPatient('124')">
+                                    <td><span class="badge warning">Moderate</span></td>
+                                    <td><strong>Sarah Smith</strong><div style="font-size:0.75rem; opacity:0.6">29F • #99102</div></td>
+                                    <td>Severe Dermatitis. Uploaded rash images.</td>
+                                    <td>15:30</td>
+                                    <td><span class="material-symbols-outlined" style="color:var(--text-sub)">arrow_forward</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge stable">Stable</span></td>
+                                    <td><strong>Mike Ross</strong><div style="font-size:0.75rem; opacity:0.6">31M • #11029</div></td>
+                                    <td>Medication Refill Request.</td>
+                                    <td>22:10</td>
+                                    <td><span class="material-symbols-outlined" style="color:var(--text-sub)">arrow_forward</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="dash-right-col">
+                    <div class="panel-card" style="flex:1;">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="material-symbols-outlined">history</span> Activity Feed
+                            </div>
+                        </div>
+                        <div style="padding:0;">
+                            <div class="sidebar-file-item">
+                                <span class="material-symbols-outlined file-icon-small" style="color:#1e8e3e">check_circle</span>
+                                <div class="file-name-small"><strong>Dr. Smith</strong> discharged Patient #4402</div>
+                            </div>
+                            <div class="sidebar-file-item">
+                                <span class="material-symbols-outlined file-icon-small" style="color:#1967d2">lab_profile</span>
+                                <div class="file-name-small">Labs ready for <strong>John Doe</strong></div>
+                            </div>
+                            <div class="sidebar-file-item">
+                                <span class="material-symbols-outlined file-icon-small" style="color:#d93025">e911_emergency</span>
+                                <div class="file-name-small">Emergency Alert: 3F-Ward</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-workspace" class="workspace-layout" style="display:none;">
+                
+                <div class="ws-sidebar custom-scroll" style="overflow-y:auto;">
+                    <div class="patient-card">
+                        <div class="patient-header">
+                            <div class="patient-avatar">JD</div>
+                            <div>
+                                <h2 style="margin:0; font-size:1.2rem;">John Doe</h2>
+                                <div style="color:var(--text-sub); font-size:0.85rem;">ID: #88219</div>
+                                <div style="display:flex; gap:6px; margin-top:6px;">
+                                    <span class="badge critical">High Risk</span>
+                                    <span class="badge stable">O+</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="divider"></div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">DOB / Age</span>
+                                <span class="info-val">Jan 12, 1970 (54)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Gender</span>
+                                <span class="info-val">Male</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Height</span>
+                                <span class="info-val">5' 11"</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Weight</span>
+                                <span class="info-val">195 lbs</span>
+                            </div>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="info-item">
+                            <span class="info-label" style="color:#d93025">Allergies</span>
+                            <span class="info-val">Penicillin, Peanuts</span>
+                        </div>
+                    </div>
+
+                    <div style="padding:20px;">
+                        <div class="group-label">AI Clinical Summary</div>
+                        <div style="background:var(--bg-hover); padding:12px; border-radius:8px; font-size:0.9rem; line-height:1.5; color:var(--text-main); margin-top:8px;">
+                            <strong>Chief Complaint:</strong> Chest pain (8/10).<br>
+                            <strong>Flags:</strong> Potential ACS. History of Hypertension. Meds missed yesterday.<br>
+                            <strong>Recommendation:</strong> ECG, Troponin, Aspirin immediately.
+                        </div>
+                    </div>
+                    
+                    <div style="padding:0 20px 20px;">
+                        <div class="group-label">Attachments</div>
+                        <div class="sidebar-file-item" style="margin-top:8px;">
+                            <span class="material-symbols-outlined file-icon-small" style="color:#d93025">picture_as_pdf</span>
+                            <span class="file-name-small">ECG_Scan_Report.pdf</span>
+                        </div>
+                         <div class="sidebar-file-item">
+                            <span class="material-symbols-outlined file-icon-small">image</span>
+                            <span class="file-name-small">Vitals_Snapshot.jpg</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ws-main">
+                    
+                    <div class="clinical-tabs">
+                        <button class="tab-btn active" onclick="switchTab('notes', this)">Clinical Notes</button>
+                        <button class="tab-btn" onclick="switchTab('labs', this)">Lab Results</button>
+                        <button class="tab-btn" onclick="switchTab('history', this)">Previous Visits</button>
+                        <button class="tab-btn" onclick="switchTab('chat', this)">Patient Chat</button>
+                    </div>
+
+                    <div id="tab-notes" class="tab-content active custom-scroll">
+                        <div style="max-width: 900px; margin: 0 auto;">
+                            
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                                <h3 style="margin:0;">Encounter Note</h3>
+                                <div style="display:flex; gap:10px;">
+                                    <button class="mini-action-pill" style="border:1px solid var(--border); background:var(--bg-body); cursor:pointer; padding:8px 16px; border-radius:20px;" onclick="insertTemplate()">
+                                        + SOAP Template
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="editor-toolbar">
+                                    <button class="editor-btn"><span class="material-symbols-outlined" style="font-size:18px">format_bold</span></button>
+                                    <button class="editor-btn"><span class="material-symbols-outlined" style="font-size:18px">format_italic</span></button>
+                                    <button class="editor-btn"><span class="material-symbols-outlined" style="font-size:18px">format_underlined</span></button>
+                                    <div style="width:1px; height:20px; background:var(--border); margin:0 4px;"></div>
+                                    <button class="editor-btn"><span class="material-symbols-outlined" style="font-size:18px">format_list_bulleted</span></button>
+                                    <button class="editor-btn"><span class="material-symbols-outlined" style="font-size:18px">mic</span></button>
+                                </div>
+                                <textarea id="clinicalNote" class="clinical-textarea" placeholder="Start typing or use a template...">
+S: Patient presents with acute substernal chest pain...
+
+O: BP 150/95, HR 110. Diaphoretic.
+
+A: Probable Acute Coronary Syndrome (ACS).
+
+P: 
+1. ECG ordered.
+2. Administer Aspirin 325mg.
+                                </textarea>
+                            </div>
+
+                            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; padding-bottom:40px;">
+                                <button class="new-chat-btn" style="width:auto; background:var(--bg-hover); color:var(--text-main); border:1px solid var(--border);" onclick="saveDraft()">Save Draft</button>
+                                <button class="send-btn" style="width:auto; padding:0 24px; border-radius:20px; gap:8px;" onclick="finalizeEncounter()">
+                                    <span class="material-symbols-outlined" style="font-size:18px">check_circle</span> Sign & Discharge
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-labs" class="tab-content custom-scroll">
+                        <div class="panel-card">
+                            <table class="triage-table">
+                                <thead><tr><th>Test Name</th><th>Value</th><th>Range</th><th>Flag</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Troponin I</td><td>0.15 ng/mL</td><td>< 0.04</td><td style="color:#d93025; font-weight:bold;">HIGH</td></tr>
+                                    <tr><td>WBC</td><td>11.5</td><td>4.5-11.0</td><td style="color:#ea8600; font-weight:bold;">ELEVATED</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="blastModal" class="blast-modal">
+        <div class="blast-card">
+            <span class="material-symbols-outlined" style="font-size: 48px; color: #d93025; margin-bottom:16px; animation: pulse 1s infinite;">warning</span>
+            <h2 style="margin:0 0 8px 0; color:#d93025; text-transform:uppercase; letter-spacing:1px;">Critical Alert</h2>
+            <p style="font-size:1.1rem; margin-bottom:24px;">Incoming High-Priority Case: <strong>Cardiac Arrest (ER-4)</strong></p>
+            
+            <div style="background:rgba(255,255,255,0.1); padding:16px; border-radius:8px; margin-bottom:24px; text-align:left;">
+                <div style="font-size:0.8rem; opacity:0.7; text-transform:uppercase;">AI Triage Note</div>
+                <div style="font-weight:500;">"Patient collapsed. No pulse initially. CPR in progress. ETA 2 mins."</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <button class="new-chat-btn" style="background:transparent; border:1px solid #555;" onclick="closeBlast()">Decline / Busy</button>
+                <button class="new-chat-btn" style="background:#d93025; color:white; border:none;" onclick="acceptBlast()">ACCEPT CASE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let currentView = 'dashboard';
+        let currentPatientId = null;
+
+        // --- NAVIGATION ---
+        function switchView(viewName) {
+            currentView = viewName;
+            
+            // Hide all views
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-workspace').style.display = 'none';
+            
+            // Show target
+            if (viewName === 'dashboard') {
+                document.getElementById('view-dashboard').style.display = 'grid'; // Restore grid layout
+                document.getElementById('pageTitle').innerText = 'Command Center';
+            } else if (viewName === 'workspace') {
+                document.getElementById('view-workspace').style.display = 'flex'; // Restore flex layout
+                // Title handled by openPatient
+            }
+        }
+
+        function openPatient(id) {
+            currentPatientId = id;
+            switchView('workspace');
+            document.getElementById('pageTitle').innerHTML = `
+                <span style="opacity:0.6; font-weight:400;">Patient Workspace</span> / John Doe
+            `;
+            showToast(`Loaded Case #${id}`, 'folder_open');
+        }
+
+        // --- TAB SWITCHING ---
+        function switchTab(tabId, btn) {
+            // Remove active class from all buttons and contents
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active to selected
+            btn.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        // --- EDITOR LOGIC ---
+        function insertTemplate() {
+            const ta = document.getElementById('clinicalNote');
+            ta.value += "\n\nReview of Systems:\n- Gen: Negative\n- CV: Chest Pain\n- Resp: Clear\n- GI: Negative";
+            ta.scrollTop = ta.scrollHeight;
+        }
+
+        function saveDraft() {
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Saving...";
+            
+            setTimeout(() => {
+                btn.innerText = "Saved";
+                showToast("Draft saved to cloud", "cloud_done");
+                setTimeout(() => btn.innerText = originalText, 2000);
+            }, 800);
+        }
+        
+        function finalizeEncounter() {
+            if(confirm("Sign and discharge patient? This will lock the clinical note.")) {
+                showToast("Patient Discharged Successfully", "check_circle");
+                setTimeout(() => switchView('dashboard'), 1000);
+            }
+        }
+
+        // --- STATUS TOGGLE ---
+        function toggleStatus() {
+            const btn = document.getElementById('statusBtn');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            const text = btn.querySelector('span:last-child');
+            
+            if (text.innerText === "Available") {
+                // Switch to Busy
+                btn.style.background = "#fce8e6";
+                btn.style.color = "#d93025";
+                icon.innerText = "do_not_disturb_on";
+                text.innerText = "Busy / Offline";
+            } else {
+                // Switch to Available
+                btn.style.background = "#e6f4ea";
+                btn.style.color = "#137333";
+                icon.innerText = "circle";
+                text.innerText = "Available";
+            }
+        }
+
+        // --- BLAST MODAL & TOASTS ---
+        function triggerBlastModal() {
+            document.getElementById('blastModal').style.display = 'flex';
+        }
+        function closeBlast() {
+            document.getElementById('blastModal').style.display = 'none';
+        }
+        function acceptBlast() {
+            closeBlast();
+            openPatient('EMERGENCY');
+            showToast("Emergency Protocol Activated", "e911_emergency");
+        }
+
+        function showToast(message, icon) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <span class="material-symbols-outlined" style="color:var(--text-main)">${icon}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => toast.classList.add('show'));
+            
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            if(sb.style.marginLeft === '-280px' || getComputedStyle(sb).marginLeft === '-280px') {
+                sb.style.marginLeft = '0';
+            } else {
+                sb.style.marginLeft = '-280px';
+            }
+        }
+
+        // Animation for Pulse
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes pulse { 0% { transform: scale(1); opacity:1; } 50% { transform: scale(1.1); opacity:0.8; } 100% { transform: scale(1); opacity:1; } }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

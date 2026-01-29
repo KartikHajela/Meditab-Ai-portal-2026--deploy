@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Access Denied</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900|Nunito:200,300,400,600,700,800,900&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- GENERAL STYLES --- */
+        body {
+            font-family: "Nunito", sans-serif;
+            background-color: #f8fafc; /* Light background for this specific design */
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Montserrat", sans-serif;
+        }
+
+        /* --- PAGE WRAPPER --- */
+        .page-wrap {
+            padding: 30px 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .page-not-found {
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        /* --- KEY IMAGE --- */
+        .img-key {
+            margin-bottom: 0px;
+            width: 120px; /* Adjusted size */
+            height: auto;
+        }
+
+        /* --- 403 TEXT STYLING --- */
+        h1.text-xl {
+            color: #000;
+            text-transform: uppercase;
+            line-height: 1;
+            font-size: 160px;
+            font-weight: 800;
+            letter-spacing: -20px;
+            text-shadow: -6px 4px 0px #fff;
+            margin-left: -20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1.text-xl span {
+            display: inline-block;
+            transition: all 1s ease;
+        }
+
+        /* The 'broken' 3 animation */
+        h1.text-xl span.broken {
+            animation: pulse 5s infinite;
+            color: rgba(0, 0, 0, 0.5); /* Start slightly faded */
+        }
+
+        /* --- SUBTEXT STYLING --- */
+        h4.text-md {
+            font-size: 40px;
+            font-weight: 700;
+            color: #1177bd; /* Blue */
+            text-transform: none;
+            margin: 0 0 15px 0;
+        }
+
+        h4.text-sm {
+            letter-spacing: 0.38px;
+            font-weight: 400;
+            line-height: 1.6;
+            font-size: 16px;
+            text-transform: none;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 0px;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        /* --- LINK STYLING --- */
+        h4.text-sm a {
+            color: #1177bd;
+            text-decoration: underline;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        h4.text-sm a:hover,
+        h4.text-sm a:focus {
+            color: #0d5a8f;
+            text-decoration: none;
+        }
+
+        .timer {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ef4444; /* Red for urgency */
+            font-weight: 600;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse {
+            0% { color: #000; transform: rotate(0deg); }
+            50% { color: rgba(240, 48, 48, 1); transform: rotate(10deg); }
+            100% { color: #000; transform: rotate(0deg); }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1.text-xl {
+                font-size: 100px;
+                letter-spacing: -10px;
+                margin-bottom: 20px;
+            }
+            h4.text-md {
+                font-size: 30px;
+            }
+            .img-key {
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrap">
+        <div class="page-not-found">
+            <img src="https://res.cloudinary.com/razeshzone/image/upload/v1588316204/house-key_yrqvxv.svg" class="img-key" alt="Key Icon">
+            
+            <h1 class="text-xl">
+                <span>4</span>
+                <span>0</span>
+                <span class="broken">3</span>
+            </h1>
+            
+            <h4 class="text-md">Access Denied!</h4>
+            
+            <h4 class="text-sm">
+                You do not have permission to view this section of <strong>Meditab AI Portal</strong>. 
+                This area is strictly limited to authorized medical personnel.
+                <br><br>
+                Speak to your administrator to unblock this feature.
+                <br>
+                You can go back to the <a href="javascript:history.back()">previous page</a> now.
+                
+                <span class="timer" id="redirectMsg">Auto-redirecting in 5 seconds...</span>
+            </h4>
+        </div>
+    </div>
+
+    <script>
+        // --- AUTO REDIRECT LOGIC ---
+        let count = 15;
+        const timerElement = document.getElementById('redirectMsg');
+
+        const interval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                timerElement.innerText = `Auto-redirecting in ${count} seconds...`;
+            } else {
+                clearInterval(interval);
+                timerElement.innerText = "Redirecting...";
+                // Uses history.back() to keep session state active without re-login
+                history.back();
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>

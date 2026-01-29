@@ -1,0 +1,8 @@
+.env
+credentials.json
+backend/credentials.json
+backend/static
+token.pickle
+backend/token.pickle
+app/
+__pycache__/

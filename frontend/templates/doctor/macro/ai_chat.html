@@ -1,0 +1,46 @@
+{% macro render_ai_chat() %}
+<div class="ai-consult-wrapper" style="display:flex; flex-direction:column; height:100%; background:#f8fafc;">
+    
+    <div style="padding:10px 16px; background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:6px; border-bottom:1px solid #bae6fd;">
+        <span class="material-symbols-rounded" style="font-size:14px;">dataset</span>
+        <span>Context Loaded: User Chat History (24 msgs), 2 Lab Reports</span>
+    </div>
+
+    <div class="ai-chat-log custom-scroll" id="aiConsultLog" style="flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;">
+        
+        <div class="ai-msg-row">
+            <div class="ai-avatar"><span class="material-symbols-rounded">smart_toy</span></div>
+            <div class="ai-bubble">
+                Hello Dr. Smith. I have analyzed John's chat history with the patient bot. He mentioned "radiating pain to the jaw" 2 days ago which is not in today's intake form. Would you like a summary?
+            </div>
+        </div>
+
+    </div>
+
+    <div style="padding:12px; border-top:1px solid var(--border); background:white;">
+        <div class="input-group" style="display:flex; gap:8px;">
+            <input type="text" id="aiConsultInput" placeholder="Ask AI about patient history..." 
+                   style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-input);"
+                   onkeypress="if(event.key === 'Enter') app.sendAiConsult()">
+            <button class="mini-action-pill" onclick="app.sendAiConsult()" style="background:var(--primary); color:white; border:none;">
+                <span class="material-symbols-rounded">send</span>
+            </button>
+        </div>
+        <div style="margin-top:8px; display:flex; gap:6px; overflow-x:auto;">
+            <button class="chip" onclick="app.quickAsk('Did patient mention allergies?')">Allergies?</button>
+            <button class="chip" onclick="app.quickAsk('Summarize symptoms timeline')">Timeline</button>
+            <button class="chip" onclick="app.quickAsk('Check drug interactions')">Interactions</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ai-msg-row { display: flex; gap: 10px; font-size: 0.9rem; }
+    .ai-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ai-bubble { background: white; border: 1px solid var(--border); padding: 10px 14px; border-radius: 0 12px 12px 12px; box-shadow: var(--shadow-sm); max-width: 90%; line-height: 1.5; }
+    .doc-msg-row { display: flex; gap: 10px; flex-direction: row-reverse; font-size: 0.9rem; }
+    .doc-bubble { background: var(--primary); color: white; padding: 10px 14px; border-radius: 12px 0 12px 12px; max-width: 90%; }
+    .chip { padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+    .chip:hover { background: var(--bg-hover); border-color: var(--primary); color: var(--primary); }
+</style>
+{% endmacro %}

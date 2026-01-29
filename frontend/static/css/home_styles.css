@@ -1,0 +1,1217 @@
+/* frontend/static/styles2.css */
+
+/* --- PASTE THIS AT THE TOP (Global Scrollbar) --- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+    background-color: #444746; 
+    border-radius: 20px; 
+    border: 3px solid var(--bg-body); 
+}
+::-webkit-scrollbar-thumb:hover { background-color: #5f6368; }
+
+.custom-scroll::-webkit-scrollbar { width: 10px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { 
+    background-color: #444746; 
+    border-radius: 20px; 
+    border: 3px solid var(--bg-body); 
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #5f6368; }
+
+.custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #5f6368 transparent;
+    scroll-behavior: smooth;
+}
+
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+:root {
+    /* Backgrounds */
+    --bg-body: #ffffff;
+    --bg-sidebar: #f9fafb;
+    --bg-input: #f0f4f9;
+    --bg-input-focus: #ffffff;
+    --bg-hover: #f5f5f5;
+    --bg-code: #f6f8fa;
+    --bg-popover: #ffffff;
+    --bg-element: #1e1f20;       /* Soft Black */
+    --bg-element-hover: #000000; /* Pure Black */
+    --text-element-inverse: #ffffff; /* White Text */
+    
+    /* Text */
+    --text-main: #1f1f1f;
+    --text-sub: #4b5563;
+    --text-placeholder: #8e918f;
+    --text-code: #24292e;
+    
+    /* Borders & Accents */
+    --border: #e0e3e7;
+    --active-tint: #d3e3fd; /* Google Blue Tint */
+    --active-text: #041e49;
+    
+    /* Gradients */
+    --gradient-text: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-float: 0 8px 24px rgba(0,0,0,0.12);
+    
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Extras */
+    --bg-alpha-01: rgba(19, 19, 20, 0.1);
+    --bg-alpha-02: rgba(19, 19, 20, 0.2);
+    --bg-alpha-03: rgba(19, 19, 20, 0.3);
+    --bg-alpha-04: rgba(19, 19, 20, 0.4);
+    --bg-alpha-05: rgba(19, 19, 20, 0.5);
+    --bg-alpha-06: rgba(19, 19, 20, 0.6);
+    --bg-alpha-07: rgba(19, 19, 20, 0.7);
+    --bg-alpha-08: rgba(19, 19, 20, 0.8);
+    --bg-alpha-09: rgba(19, 19, 20, 0.9);
+    --bg-alpha-10: rgba(19, 19, 20, 1.0);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-body: #131314;
+        --bg-sidebar: #1e1f20;
+        --bg-input: #1e1f20;
+        --bg-input-focus: #282a2c;
+        --bg-hover: #2c2c2c;
+        --bg-code: #2d2d2d;
+        --bg-popover: #1e1f20;
+        --bg-element: #3c4043; 
+        --bg-element-hover: #4a4d50;
+        --text-element-inverse: #e3e3e3;
+        
+        --text-main: #e3e3e3;
+        --text-sub: #c4c7c5;
+        --text-placeholder: #444746;
+        --text-code: #e3e3e3;
+        
+        --border: #444746;
+        --active-tint: #004a77;
+        --active-text: #c2e7ff;
+        
+        --shadow-sm: none;
+        --shadow-md: none;
+        --shadow-float: 0 8px 24px rgba(0,0,0,0.4);
+
+    /* Extras */
+    --bg-alpha-01: rgba(255, 255, 255, 0.1);
+    --bg-alpha-02: rgba(255, 255, 255, 0.2);
+    --bg-alpha-03: rgba(255, 255, 255, 0.3);
+    --bg-alpha-04: rgba(255, 255, 255, 0.4);
+    --bg-alpha-05: rgba(255, 255, 255, 0.5);
+    --bg-alpha-06: rgba(255, 255, 255, 0.6);
+    --bg-alpha-07: rgba(255, 255, 255, 0.7);
+    --bg-alpha-08: rgba(255, 255, 255, 0.8);
+    --bg-alpha-09: rgba(255, 255, 255, 0.9);
+    --bg-alpha-10: rgba(255, 255, 255, 1.0);
+
+    }
+}
+
+* { box-sizing: border-box; outline: none; }
+body { 
+    margin: 0; font-family: var(--font-family); 
+    background: var(--bg-body); color: var(--text-main); 
+    height: 100vh; display: flex; overflow: hidden; 
+}
+
+/* =========================================
+   2. LAYOUT & SIDEBAR
+   ========================================= */
+.app-layout { display: flex; width: 100%; height: 100%; }
+
+.sidebar {
+    width: 280px;
+    background: var(--bg-sidebar);
+    display: flex; flex-direction: column;
+    padding: 20px 16px;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0; z-index: 50;
+    border-right: 1px solid var(--border);
+    overflow: hidden; 
+}
+
+/* Wrapper: Flex Container that DOES NOT scroll itself */
+.sidebar-scroll-content {
+    flex: 1; /* Fills height between Search and Footer */
+    display: flex; 
+    flex-direction: column;
+    overflow: hidden; /* Disable wrapper scroll to prevent double scrollbars */
+    margin-bottom: 10px;
+}
+
+.sidebar-header { 
+    margin-left: 5px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; 
+}
+.brand-title { font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+
+.brand-logo {
+    width: 22px;
+    height: 20px;
+    fill: black;
+}
+
+/* Auto switch when OS/browser is dark */
+@media (prefers-color-scheme: dark) {
+    .brand-logo {
+        fill: white;
+    }
+}
+
+.new-chat-btn {
+    width: 100%; 
+    background: var(--bg-element); /* Dark in Light Mode */
+    color: var(--text-element-inverse);
+    border: 1px solid transparent;
+    border-radius: 10px; padding: 12px; 
+    font-family: inherit; font-weight: 500; font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+.new-chat-btn:hover { 
+    background: var(--bg-element-hover); 
+    transform: translateY(-1px);
+}
+
+/* History List */
+/* History: Takes available space and scrolls internally */
+.history-container { 
+    flex: 1; /* Grows to push widgets to the bottom */
+    overflow-y: auto; /* SCROLLS HERE */
+    padding-bottom: 10px;
+    min-height: 0; /* Critical for Firefox flex scrolling */
+}
+.group-label { font-size: 11px; font-weight: 600; color: var(--text-sub); margin: 20px 8px 8px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.history-item {
+    padding: 8px 12px; border-radius: 8px; font-size: 14px;
+    color: var(--text-main); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: 0.1s;
+}
+.history-item:hover { background: var(--bg-hover); }
+
+/* --- FILES WIDGET (Sidebar Accordion) --- */
+.files-widget {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+    margin-bottom: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.files-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0 10px 8px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+.files-header:hover { opacity: 0.8; }
+
+/* Override default margin for the label inside this header */
+.files-widget .group-label { margin: 0; cursor: pointer; }
+
+.toggle-arrow {
+    font-size: 18px;
+    color: var(--text-sub);
+    transition: transform 0.3s ease;
+}
+
+/* List with Transition */
+.files-list {
+    max-height: 160px; /* Max height when OPEN */
+    overflow-y: auto;
+    padding: 0 4px;
+    scrollbar-width: thin;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 1;
+    min-height: 0;
+}
+
+.files-list::-webkit-scrollbar,
+
+/* --- COLLAPSED STATE --- */
+.files-widget.collapsed .files-list {
+    max-height: 0; /* Height when CLOSED */
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.files-widget.collapsed .toggle-arrow {
+    transform: rotate(-90deg); /* Rotate arrow to point right */
+}
+
+.files-widget.resizing .files-list {
+    transition: none;
+}
+
+/* File Item Styling (Kept same) */
+.sidebar-file-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border-radius: 8px; font-size: 0.85rem; color: var(--text-main);
+    cursor: default; transition: background 0.2s;
+}
+.sidebar-file-item:hover { background: var(--bg-hover); }
+
+.file-icon-small { font-size: 18px; color: var(--text-sub); }
+.file-name-small { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+
+.file-del-btn {
+    background: transparent; border: none; cursor: pointer; color: var(--text-sub);
+    padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+}
+.sidebar-file-item:hover .file-del-btn { opacity: 1; }
+.file-del-btn:hover { color: #d93025; background: rgba(217, 48, 37, 0.1); }
+
+/* --- SIDEBAR SEARCH --- */
+.sidebar-search {
+    margin: 10px 0;
+    position: relative;
+    display: flex; align-items: center;
+}
+.sidebar-search input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 8px 8px 32px; /* Space for icon */
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: 0.2s;
+}
+.sidebar-search input:focus {
+    border-color: var(--bg-alpha-03);
+    background: var(--bg-hover);
+}
+.search-icon {
+    position: absolute; left: 8px;
+    font-size: 18px; color: var(--text-sub);
+    pointer-events: none;
+}
+
+/* --- EMERGENCY BUTTON --- */
+.emergency-btn {
+    margin-top: auto;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+    width: 100%;
+    background: #fce8e6; /* Light Red */
+    color: #d93025;       /* Dark Red Text */
+    border: 1px solid #f9d7d4;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.2s;
+}
+.emergency-btn:hover {
+    background: #d93025;
+    color: white;
+    box-shadow: 0 4px 12px rgba(217, 48, 37, 0.3);
+}
+
+/* --- EMERGENCY MODAL --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: none; /* Hidden by default */
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+}
+.modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+
+.modal-box {
+    background: var(--bg-popover);
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%; max-width: 320px;
+    text-align: center;
+    box-shadow: var(--shadow-float);
+    border: 1px solid var(--border);
+}
+.modal-icon-header { margin-bottom: 12px; }
+.modal-box h3 { margin: 0 0 8px 0; color: var(--text-main); }
+.modal-box p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px; }
+
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.modal-btn {
+    flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: 0.2s;
+}
+.modal-btn.secondary { background: var(--bg-hover); color: var(--text-main); }
+.modal-btn.secondary:hover { background: var(--border); }
+.modal-btn.primary { background: #d93025; color: white; }
+.modal-btn.primary:hover { opacity: 0.9; }
+
+/* REUSE FILES WIDGET STYLES FOR INFO WIDGET */
+/* (Ensure your existing CSS for .files-widget handles this automatically) */
+.info-content { padding-top: 4px; }
+
+
+/* Footer */
+.sidebar-footer { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px;flex-shrink: 0; }
+.user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.user-profile:hover { background: var(--bg-hover); }
+.avatar-small { 
+    width: 28px; height: 28px; background: linear-gradient(135deg, #4285f4, #d96570); 
+    color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;
+}
+
+/* =========================================
+   3. MAIN WORKSPACE
+   ========================================= */
+.main-content { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; background: var(--bg-body); }
+
+.top-bar { 
+    height: 60px; flex-shrink: 0; display: flex; align-items: center; 
+    justify-content: space-between; padding: 0 24px; border-bottom: 1px solid transparent;
+}
+.chat-title { font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+.mobile-menu-btn { 
+    display: flex; /* Changed from 'none' to 'flex' */
+    align-items: center; 
+    justify-content: center;
+    background: transparent; 
+    border: none; 
+    color: var(--text-sub); 
+    cursor: pointer; 
+    padding: 8px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.mobile-menu-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.sidebar-toggle { background: none; border: none; cursor: pointer; color: var(--text-sub); display: flex; padding: 4px; border-radius: 4px; }
+.sidebar-toggle:hover { background: var(--bg-hover); color: var(--text-main); }
+
+/* --- New Sidebar File Actions --- */
+.mini-action-pill {
+    transition: filter 0.2s;
+}
+.mini-action-pill:hover {
+    filter: brightness(0.9);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Fix for dark mode pill background brightness */
+@media (prefers-color-scheme: dark) {
+    .mini-action-pill {
+        filter: brightness(1.2); 
+    }
+    .mini-action-pill:hover {
+        filter: brightness(1.4);
+    }
+}
+
+/* --- SIDEBAR RESIZER --- */
+.sidebar-resizer {
+    height: 14px; /* Slightly taller touch area */
+    width: 100%;
+    cursor: row-resize; /* Shows Up/Down arrow cursor */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    z-index: 10;
+    margin-top: -2px; /* Pulls it up slightly to sit between items */
+}
+
+/* The visual line */
+.resizer-line {
+    width: 40px;
+    height: 3px;
+    background-color: var(--border); /* Visible grey line */
+    border-radius: 2px;
+    transition: 0.2s;
+}
+
+/* Hover Effect: Line turns Blue and gets wider */
+.sidebar-resizer:hover .resizer-line {
+    background-color: var(--bg-alpha-08); 
+    width: 80px;
+    height: 4px;
+}
+
+/* Optional: Highlight the whole bar slightly on hover */
+.sidebar-resizer:hover {
+    background: rgba(133, 133, 133, 0.322);
+}
+
+/* Ensure Lists allow resizing */
+.files-list {
+    min-height: 0;
+}
+.files-widget.resizing .files-list {
+    transition: none; /* Disables smooth animation while dragging */
+}
+
+/* =========================================
+   4. CHAT AREA & MESSAGES
+   ========================================= */
+.chat-scroll-area { 
+    flex: 1; overflow-y: auto; padding: 0 20px; 
+    display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth;
+}
+
+/* Landing */
+.landing-container { width: 100%; max-width: 800px; margin-top: 10vh; animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.greeting-section { margin-bottom: 40px; }
+.gradient-text { 
+    font-size: 3rem; font-weight: 600; margin: 0; 
+    background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+}
+.sub-greeting { font-size: 1.5rem; color: var(--text-sub); font-weight: 400; margin: 8px 0 30px 0; }
+
+.suggestions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.suggestion-card {
+    background: var(--bg-sidebar); border-radius: 12px; padding: 16px; 
+    cursor: pointer; display: flex; flex-direction: column; gap: 10px; height: 140px; justify-content: space-between;
+    border: 1px solid transparent; transition: 0.2s;
+}
+.suggestion-card:hover { border-color: var(--border); background: var(--bg-hover); box-shadow: var(--shadow-sm); }
+
+/* Messages */
+.messages-area { width: 100%; max-width: 800px; margin-top: 20px; display: flex; flex-direction: column; gap: 30px; }
+.message-row { display: flex; gap: 16px; width: 100%; animation: slideIn 0.2s ease; }
+@keyframes slideIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+/* USER: Right Aligned */
+.message-row.user { flex-direction: row-reverse; }
+.message-row.user .msg-content { 
+    max-width: 80%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-end; /* Align bubble and actions to the right */
+    background: transparent; 
+    padding: 0; 
+}
+/* The Bubble (Visible Colored Box) */
+.msg-bubble {
+    background: var(--bg-hover);
+    border-radius: 18px 18px 4px 18px;
+    padding: 12px 16px;
+    color: var(--text-main);
+    text-align: left;
+}
+
+.message-row.user .msg-avatar { display: none; } /* Hide user avatar for cleaner look */
+
+/* AI: Left Aligned */
+.message-row.ai .msg-content { flex: 1; padding-top: 4px; overflow-x: hidden; }
+
+/* Avatars */
+.msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
+.msg-avatar.ai { background: var(--bg-body); color: #4285f4; overflow: visible; z-index: 10; }
+.message-row.user .msg-avatar { display: none; }
+
+/* =========================================
+   AI AVATAR ANIMATIONS (High Intensity Glow)
+   ========================================= */
+
+/* Base Style for the Icon */
+.ai-icon {
+    font-size: 20px;
+    display: inline-block;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* Smooth bounce for hover/scale */
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+    /* Hardware acceleration for smooth glow */
+    will-change: transform, filter;
+}
+
+/* STATE 1: PROCESSING (Loading)
+   - Deep Pulse
+   - Strong Blue/Purple Neon Glow
+*/
+.ai-icon.loading {
+    background-image: linear-gradient(90deg, #4285f4 0%, #4285f4 30%, #9b72cb 70%, #d96570 100%);
+    background-size: 200% auto;
+    animation: ai-process 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes ai-process {
+    0% {
+        background-position: 0% 50%; /* Blue */
+        transform: scale(0.95);
+        /* Subtle Blue Glow */
+        filter: drop-shadow(0 0 5px rgba(66, 133, 244, 0.5));
+    }
+    100% {
+        background-position: 100% 50%; /* Gradient */
+        transform: scale(1.15);
+        /* DOUBLE GLOW: Purple Core + Wide Blue Aura */
+        filter: drop-shadow(0 0 8px rgba(155, 114, 203, 0.9)) 
+                drop-shadow(0 0 15px rgba(66, 133, 244, 0.6));
+    }
+}
+
+/* STATE 2: RESULT (Static)
+   - Final Gradient
+   - No Glow by default (Clean look)
+   - EXPLOSIVE Glow on Hover
+*/
+.ai-icon.result {
+    background-image: linear-gradient(135deg, #4285f4, #9b72cb, #d96570);
+}
+
+.ai-icon.result:hover {
+    transform: scale(1.05) rotate(5deg);
+    /* Intense Pink/Red Neon Glow */
+    filter: drop-shadow(0 0 10px rgba(217, 101, 112, 0.8)) 
+            drop-shadow(0 0 20px rgba(217, 101, 112, 0.4));
+}
+
+/* OPTIONAL: Make the 'Thinking...' text glow too */
+.shimmer-text {
+    /* ... existing shimmer styles ... */
+    text-shadow: 0 0 10px rgba(66, 133, 244, 0.3);
+}
+
+/* Markdown Styles */
+.markdown-body { font-size: 1rem; line-height: 1.6; color: var(--text-main); }
+.markdown-body p { margin-bottom: 1em; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 1em; margin-bottom: 0.5em; font-weight: 600; }
+.markdown-body code { background: var(--bg-code); padding: 2px 4px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: var(--text-code); }
+.markdown-body pre { background: var(--bg-code); padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; border: 1px solid var(--border); }
+.markdown-body pre code { background: transparent; padding: 0; color: inherit; }
+
+/* --- USER ACTIONS (Below Bubble) --- */
+.user-actions { 
+    display: flex; gap: 4px; justify-content: flex-end; margin-top: 4px; 
+    opacity: 0; transition: opacity 0.2s; padding-right: 4px;
+}
+
+.message-row.user:hover .user-actions { opacity: 1; }
+.action-icon { 
+    background: transparent; 
+    border: none; 
+    cursor: pointer; 
+    color: var(--text-sub); 
+    padding: 6px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    transition: 0.2s; 
+}
+
+/* Transparent BG + Glow on Hover */
+.action-icon:hover { 
+    color: var(--text-main); 
+    background: transparent; 
+    /* This creates the glow effect around the icon */
+    text-shadow: 0 0 8px rgba(66, 133, 244, 0.6); 
+    transform: scale(1.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    .action-icon:hover { text-shadow: 0 0 8px rgba(255, 255, 255, 0.6); }
+}
+
+/* AI Thinking Steps */
+.thinking-steps { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-sidebar); }
+.thinking-summary { 
+    padding: 10px 14px; cursor: pointer; 
+    font-size: 0.85rem; font-weight: 600; color: var(--text-main); 
+    list-style: none; display: flex; align-items: center; gap: 8px; user-select: none;
+}
+.thinking-summary:hover { background: var(--bg-hover); }
+.thinking-details { padding: 12px 16px; font-size: 0.9rem; border-top: 1px solid var(--border); background: var(--bg-body); color: var(--text-sub); line-height: 1.6; }
+.step-item { margin-bottom: 5px; display: flex; gap: 8px; align-items: center; }
+
+/* Shimmer Loader */
+.shimmer-text {
+    display: inline-block;
+    background: linear-gradient(to right, var(--text-sub) 20%, var(--text-main) 50%, var(--text-sub) 80%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 2s linear infinite;
+    font-weight: 500;
+}
+@keyframes shimmer { to { background-position: 200% center; } }
+
+/* =========================================
+   5. INPUT & AUTOCOMPLETE
+   ========================================= */
+.input-wrapper {
+    width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 24px;
+    background: var(--bg-body); z-index: 100; position: relative;
+    padding-top: 10px;
+}
+
+.input-card {
+    background: var(--bg-input); border-radius: 24px; padding: 12px 16px;
+    border: 1px solid transparent; transition: 0.2s; position: relative;
+    display: flex; flex-direction: column; gap: 6px;
+}
+.input-card:focus-within { 
+    background: var(--bg-input-focus); 
+    box-shadow: var(--shadow-float); 
+    border-color: var(--border);
+}
+
+textarea { 
+    width: 100%; border: none; background: transparent; font-family: inherit; 
+    font-size: 1rem; color: var(--text-main); resize: none; max-height: 200px; 
+    outline: none; padding: 0; margin-bottom: 4px;
+}
+
+/* Layout for Bottom Row */
+.input-bottom-row { 
+    display: flex; justify-content: space-between; 
+    align-items: center; margin-top: 4px; 
+}
+.toolbar-group { display: flex; gap: 8px; align-items: center; }
+
+/* --- BUTTONS --- */
+
+.add-btn, .mic-btn, .search-btn {
+    width: 38px; height: 38px; 
+    border-radius: 50%; 
+    border: none; /* Removed border for cleaner dark look */
+    
+    background: var(--bg-element); 
+    color: var(--text-element-inverse);
+    
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 1. Add/Attach Button (Outlined) */
+
+.add-btn:hover { background: var(--bg-element-hover); transform: rotate(90deg); border-color: var(--text-sub); }
+
+/* 2. Tool Buttons (Mic - Outlined to match Add) */
+
+.mic-btn:hover { background: var(--bg-element-hover); border-color: var(--text-sub); transform: scale(1.025);}
+
+/* 3. Send Button (Filled - Primary Action) */
+.send-btn { 
+    width: 38px; height: 38px; border-radius: 50%; border: none;
+    /* In Light Mode: Standard Google Blue to stand out from Black buttons */
+    background: #0b57d0; 
+    color: white; 
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: 0.2s;
+}
+.send-btn:hover { opacity: 0.9; transform: scale(1.1); box-shadow: 0 4px 12px rgba(11, 87, 208, 0.3); }
+/* 4. Search Button (Filled - Primary Action) */
+
+.search-btn:hover { background: var(--bg-element-hover); border-color: var(--text-sub); transform: rotate(360deg)}
+
+/* Dark Mode Adaptation for Send Button */
+@media (prefers-color-scheme: dark) { 
+    .send-btn { background: #ffffff; color: #000; } 
+}
+
+/* =========================================
+   VOICE RECORDING UI
+   ========================================= */
+
+/* Hide Standard Toolbar when Recording */
+.toolbar-group.hidden { display: none; }
+
+/* Recording Controls Container */
+.recording-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideInRight 0.2s ease-out;
+}
+@keyframes slideInRight { from{opacity:0; transform:translateX(10px);} to{opacity:1; transform:translateX(0);} }
+
+/* 1. Visualizer Circle */
+.rec-visualizer {
+    width: 42px; height: 42px;
+    background: rgba(66, 133, 244, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    margin-right: 4px;
+}
+
+.rec-visualizer.paused .wave-bar {
+    animation-play-state: paused; /* Freezes animation in place */
+    opacity: 0.5; /* Dims the bars to visually indicate 'inactive' */
+}
+
+/* Animated Bars */
+.wave-bar {
+    width: 3px;
+    background: #4285f4;
+    border-radius: 2px;
+    animation: wave 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { height: 12px; animation-delay: 0.0s; }
+.wave-bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { height: 14px; animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { height: 10px; animation-delay: 0.3s; }
+
+@keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.8); }
+}
+
+/* Recording Buttons */
+.rec-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+
+/* Pause (Secondary) */
+.rec-btn.secondary { background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border); }
+.rec-btn.secondary:hover { background: var(--border); }
+
+/* Cancel (Red) */
+.rec-btn.cancel { background: #fce8e6; color: #d93025; }
+.rec-btn.cancel:hover { background: #fad2cf; }
+
+/* Confirm (Green) */
+.rec-btn.confirm { background: #e6f4ea; color: #1e8e3e; }
+.rec-btn.confirm:hover { background: #ceead6; }
+
+/* --- RECORDING TIMER --- */
+.rec-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 12px;
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.rec-dot {
+    color: #d93025;
+    font-size: 10px;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+
+.attachment-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 4px;
+    margin-bottom: 0;
+    transition: all 0.2s;
+}
+.attachment-area:not(:empty) {
+    padding-bottom: 10px;
+}
+
+/* Base Chip Style */
+.attachment-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px; /* Fixed height for consistency */
+    padding: 0 6px 0 12px; /* More padding on left for text, less on right for buttons */
+    
+    /* Dark "Pill" Look from image */
+    background: var(--bg-hover); 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    
+    font-size: 0.85rem;
+    color: var(--text-main);
+    user-select: none;
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 220px;
+}
+
+/* Dark Mode Specific Tweaks to match screenshot exactly */
+@media (prefers-color-scheme: dark) {
+    .attachment-chip {
+        background: #28292a; 
+        border-color: #3c4043;
+    }
+}
+
+@keyframes popIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+.chip-icon { 
+    font-size: 18px; 
+    flex-shrink: 0; 
+    color: var(--text-sub); 
+}
+
+.chip-text { 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 140px; 
+    font-weight: 500;
+}
+
+/* --- ACTIONS (Buttons) --- */
+.chip-actions {
+    display: flex; 
+    align-items: center; 
+    gap: 0px; /* Buttons sit close together */
+    border: none; /* Removed the vertical divider line */
+    margin-left: 2px;
+}
+
+.chip-btn {
+    background: transparent; 
+    border: none; 
+    cursor: pointer;
+    color: var(--text-sub); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 4px; 
+    border-radius: 50%; 
+    transition: 0.2s;
+    width: 26px; height: 26px; /* Touch target size */
+}
+
+.chip-btn:hover { 
+    background: rgba(128, 128, 128, 0.2); 
+    color: var(--text-main); 
+}
+
+/* --- FILE SPECIFIC --- */
+.attachment-chip.file .chip-icon { 
+    color: var(--text-sub); /* Neutral color for paperclip */
+}
+
+/* --- AUDIO SPECIFIC --- */
+.attachment-chip.audio {
+    /* Optional: Slight distinction for audio, or keep uniform */
+    background: var(--bg-hover);
+}
+
+.attachment-chip.audio.playing {
+    border-color: #4285f4; /* Highlights border when playing */
+    background: rgba(66, 133, 244, 0.08); /* Very subtle blue tint */
+}
+
+.attachment-chip.audio .chip-icon {
+    color: #d93025; /* Red Mic Icon */
+}
+
+/* Play/Pause specific hover states */
+.chip-btn.play:hover { color: #4285f4; }
+.chip-btn.delete:hover { color: #d93025; }
+
+/* Autocomplete Box */
+.autocomplete-box {
+    position: absolute; bottom: 100%; left: 0; right: 0;
+    background: var(--bg-popover); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 8px;
+    box-shadow: var(--shadow-float); display: none; overflow: hidden; z-index: 200;
+}
+.autocomplete-box.visible { display: block; }
+.suggestion-item { padding: 10px 16px; cursor: pointer; font-size: 0.9rem; color: var(--text-main); border-bottom: 1px solid var(--border); }
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background: var(--bg-hover); }
+.suggestion-item strong { font-weight: 600; }
+
+.sugg-icon-box { 
+    align-self: flex-end; 
+    font-size: 28px; /* Larger icon size */
+    line-height: 1;
+    background: transparent; /* Remove circle background */
+    width: auto; height: auto;
+    border-radius: 0; 
+    box-shadow: none; /* Remove shadow */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); /* Soft shadow on the emoji itself */
+    transition: transform 0.2s ease;
+}
+
+.suggestion-card:hover .sugg-icon-box {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.scroll-bottom-btn {
+    position: absolute; 
+    
+    /* Anchor to top-right of the input wrapper */
+    bottom: 100%; 
+    right: 0;     
+    
+    /* Fine-tune position: moves it down slightly to sit closer to the box */
+    margin-bottom: 0px; 
+    margin-right: 10px;   
+
+    /* Reset previous centering styles */
+    left: auto; 
+    transform: none; 
+
+    /* Visual Styles */
+    width: 36px; height: 36px; 
+    border-radius: 50%; 
+    background: var(--bg-popover);
+    border: 1px solid var(--border); 
+    box-shadow: var(--shadow-sm);
+    display: none; /* Toggled by JS */
+    align-items: center; justify-content: center; 
+    cursor: pointer; 
+    z-index: 90;
+    color: var(--text-main);
+}
+.scroll-bottom-btn.visible { display: flex; }
+.scroll-bottom-btn:hover { 
+    background: var(--text-main); 
+    color: var(--bg-body);
+    border-color: var(--text-main);
+    box-shadow: var(--shadow-md);
+}
+/* --- CLOSE BUTTON (Upload Toast) --- */
+.close-btn {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.close-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+/* Autocomplete */
+.autocomplete-box {
+    position: absolute; bottom: 100%; left: 0; right: 0;
+    background: var(--bg-popover); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 8px;
+    box-shadow: var(--shadow-float); display: none; overflow: hidden; z-index: 200;
+}
+.autocomplete-box.visible { display: block; }
+.suggestion-item { padding: 10px 16px; cursor: pointer; font-size: 0.9rem; color: var(--text-main); border-bottom: 1px solid var(--border); }
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background: var(--bg-hover); }
+.suggestion-item strong { font-weight: 600; }
+
+/* =========================================
+   6. UPLOAD TOAST & EXTRAS
+   ========================================= */
+.upload-toast {
+    position: fixed; /* Force fixed positioning relative to viewport */
+    bottom: 24px; 
+    right: 24px; 
+    width: 320px;
+    background: var(--bg-popover); 
+    border: 1px solid var(--border);
+    border-radius: 12px; 
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12); /* Stronger shadow */
+    display: none; 
+    flex-direction: column; 
+    z-index: 9999; /* Ensure it stays on top */
+}
+.upload-toast.visible { display: flex; }
+.toast-header { padding: 10px 16px; background: var(--bg-sidebar); display: flex; justify-content: space-between; border-radius: 12px 12px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+.toast-body { padding: 0; max-height: 150px; overflow-y: auto; }
+.um-item { padding: 10px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+
+/* =========================================
+   USER PROFILE DROPDOWN (Enhanced)
+   ========================================= */
+.header-avatar {cursor: pointer;   display: flex; /* Changed from 'none' to 'flex' */
+    align-items: center; 
+    justify-content: center;
+    background: transparent; 
+    border: none; 
+    color: var(--text-sub); 
+    cursor: pointer; 
+    padding: 8px;
+    border-radius: 8px;
+    transition: 0.2s;}
+
+.header-avatar:hover {background: var(--bg-hover);color: var(--text-main);}
+
+.profile-dropdown {
+    position: absolute; 
+    top: 70px; 
+    right: 24px; 
+    width: 280px;
+    
+    /* Modern Card Style */
+    background: var(--bg-popover);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2); /* Deep, soft shadow */
+    
+    /* Layout & Animation */
+    display: none; 
+    flex-direction: column; 
+    padding: 8px; 
+    z-index: 2000;
+    transform-origin: top right;
+    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-dropdown.active { display: flex; }
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Header Area (Avatar + Name) */
+.dropdown-header { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 24px 16px 16px; 
+    gap: 10px;
+    /* Subtle fade at the top */
+    background: linear-gradient(to bottom, var(--bg-hover) 0%, transparent 100%);
+    border-radius: 14px 14px 4px 4px;
+}
+
+/* Large Avatar Styling */
+.avatar-large { 
+    width: 64px; 
+    height: 64px; 
+    border-radius: 50%; 
+    /* Brand Gradient Background */
+    background: linear-gradient(135deg, #4285f4, #d96570);
+    color: white; 
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 16px rgba(66, 133, 244, 0.3); /* Glow */
+    margin-bottom: 4px;
+}
+
+/* Text Styling */
+.dropdown-text { text-align: center; }
+
+#modalName {
+    font-size: 1.1rem; 
+    font-weight: 700; 
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+#modalEmail {
+    font-size: 0.85rem; 
+    color: var(--text-sub); 
+    opacity: 0.8;
+}
+
+/* Separator Line */
+hr { 
+    border: 0; 
+    height: 1px; 
+    background: var(--border); 
+    margin: 8px 12px; 
+}
+
+/* Menu Items (Sign Out) */
+.dropdown-item { 
+    background: transparent; 
+    border: none; 
+    padding: 12px 16px; 
+    border-radius: 12px; 
+    text-align: left; 
+    cursor: pointer; 
+    color: var(--text-main); 
+    display: flex; align-items: center; gap: 12px; 
+    font-size: 0.95rem; font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Hover Effect: Turns Red for "Sign Out" */
+.dropdown-item:hover { 
+    background: #fce8e6; /* Light Red bg */
+    color: #d93025;       /* Red text */
+}
+
+/* Dark Mode Adjustment for Hover */
+@media (prefers-color-scheme: dark) {
+    .dropdown-item:hover { 
+        background: rgba(217, 48, 37, 0.15); 
+        color: #ff8a80; 
+    }
+}
+@media (max-width: 768px) {
+    .sidebar { position: fixed; height: 100%; margin-left: -280px; box-shadow: 50px 0 50px rgba(0,0,0,0.1); }
+    .sidebar.expanded { margin-left: 0; }
+    .mobile-menu-btn { display: block; }
+}
+
+/* --- PROFILE COMPLETION ALERT --- */
+.profile-alert-btn {
+    margin-top: 10px;
+    background: #4285f4; /* Google Blue */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    transition: 0.2s;
+    /* Vibrate Animation */
+    animation: gentle-shake 3s infinite;
+}
+
+.profile-alert-btn:hover {
+    background: #3367d6;
+    animation: none; /* Stop shaking on hover */
+}
+
+@keyframes gentle-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+    /* Pause */
+    91% { transform: translateX(0); } 
+}
+
+/* Add these if missing for the profile page layout */
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-body);
+    color: var(--text-main);
+    appearance: none; /* Custom dropdown arrow if desired */
+}

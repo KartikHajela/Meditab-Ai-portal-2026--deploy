@@ -1,0 +1,100 @@
+{% extends "doctor/base.html" %}
+
+{% block content %}
+<div id="view-dashboard" class="view-container active">
+    
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; margin-bottom:24px;">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background:#e0f2fe; color:#0284c7;">
+                <span class="material-symbols-rounded">personal_injury</span>
+            </div>
+            <div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Waiting Room</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background:#fce7f3; color:#db2777;">
+                <span class="material-symbols-rounded">monitor_heart</span>
+            </div>
+            <div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Critical Vitals</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background:#dcfce7; color:#16a34a;">
+                <span class="material-symbols-rounded">check_circle</span>
+            </div>
+            <div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Discharged</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background:#f3f4f6; color:#4b5563;">
+                <span class="material-symbols-rounded">schedule</span>
+            </div>
+            <div>
+                <div class="stat-value">4h</div>
+                <div class="stat-label">Shift Remaining</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; height: calc(100vh - 280px);">
+        
+        <div class="panel-card" style="display:flex; flex-direction:column;">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="material-symbols-rounded">queue_music</span> Live Triage Queue
+                </div>
+                <button class="mini-action-pill" onclick="app.refreshTriage()">Refresh</button>
+            </div>
+            <div style="flex:1; overflow-y:auto;">
+                <table class="triage-table">
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Patient</th>
+                            <th>Chief Complaint</th>
+                            <th>Wait Time</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="triageTableBody">
+                        <tr onclick="app.loadPatient('101')">
+                            <td><span class="badge critical">Critical</span></td>
+                            <td><strong>John Doe</strong></td>
+                            <td>Chest Pain (Acute)</td>
+                            <td style="color:var(--danger)">14m</td>
+                            <td><span class="material-symbols-rounded">arrow_forward</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel-card" style="display:flex; flex-direction:column;">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="material-symbols-rounded">notifications_active</span> Activity
+                </div>
+            </div>
+            <div style="padding:16px; overflow-y:auto;" id="activityFeed">
+                <div class="feed-item">
+                    <span class="material-symbols-rounded feed-icon" style="background:#dcfce7; color:#16a34a;">lab_research</span>
+                    <div>
+                        <div class="feed-text"><strong>Lab Results</strong> ready for Patient #102</div>
+                        <div class="feed-time">2m ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "doctor/workspace.html" %}
+{% include "doctor/profile.html" %}
+
+{% endblock %}

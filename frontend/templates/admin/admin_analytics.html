@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --md-sys-color-surface: #f8fafd;
+            --md-sys-color-on-surface: #191c20;
+            --md-sys-color-primary: #0b57d0;
+            --md-sys-color-primary-container: #d3e3fd;
+            --md-sys-color-on-primary-container: #041e49;
+            --md-sys-color-surface-container: #ffffff;
+            --md-sys-color-outline-variant: #c4c7c5;
+            --radius-xl: 28px;
+            --radius-l: 16px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-surface: #111315;
+                --md-sys-color-on-surface: #e2e2e6;
+                --md-sys-color-primary: #a8c7fa;
+                --md-sys-color-primary-container: #0842a0;
+                --md-sys-color-on-primary-container: #d3e3fd;
+                --md-sys-color-surface-container: #1e1f20;
+                --md-sys-color-outline-variant: #444746;
+            }
+        }
+        body { margin: 0; font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .nav-rail { width: 80px; padding: 20px 0; display: flex; flex-direction: column; align-items: center; background: var(--md-sys-color-surface); z-index: 2; }
+        .nav-btn { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; cursor: pointer; color: var(--md-sys-color-on-surface); text-decoration: none; transition: 0.2s; }
+        .nav-btn.active { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); width: 56px; height: 56px; border-radius: 16px; }
+        .nav-btn:hover:not(.active) { background: rgba(130, 130, 130, 0.1); width: 56px; height: 56px; border-radius: 28px; }
+        .nav-icon { font-size: 24px; }
+        .nav-label { font-size: 11px; font-weight: 500; margin-top: 4px; text-align: center; }
+
+        /* Main Content */
+        .main { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; border-radius: var(--radius-xl) 0 0 0; background: var(--md-sys-color-surface-container); margin-top: 10px; margin-right: 10px; box-shadow: -5px -5px 20px rgba(0,0,0,0.02); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 24px; margin: 0; }
+        .date-badge { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); padding: 8px 16px; border-radius: 100px; font-size: 14px; font-weight: 500; }
+
+        /* Kudo Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .card { background: var(--md-sys-color-surface); padding: 24px; border-radius: var(--radius-l); display: flex; flex-direction: column; justify-content: space-between; height: 140px; position: relative; overflow: hidden; transition: transform 0.2s; border: 1px solid transparent; }
+        .card:hover { transform: translateY(-2px); border-color: var(--md-sys-color-outline-variant); }
+        .card-val { font-size: 42px; line-height: 1; font-weight: 400; }
+        .card-label { font-size: 14px; color: var(--md-sys-color-on-surface); opacity: 0.8; font-weight: 500; }
+        .card-icon { position: absolute; right: 20px; top: 20px; font-size: 48px; opacity: 0.1; }
+
+        /* Chart Section */
+        .chart-container { background: var(--md-sys-color-surface); padding: 24px; border-radius: var(--radius-l); height: 300px; width: 100%; box-sizing: border-box; }
+        
+        /* Action FABs (Buttons) */
+        .action-row { display: flex; gap: 16px; margin-top: auto; }
+        .big-btn { flex: 1; padding: 25px; border-radius: var(--radius-l); background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); text-decoration: none; display: flex; align-items: center; gap: 15px; transition: 0.2s; }
+        .big-btn:hover { filter: brightness(0.95); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .big-btn h3 { margin: 0; font-size: 18px; }
+        .big-btn p { margin: 5px 0 0; opacity: 0.7; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <nav class="nav-rail">
+        <a href="#" class="nav-btn active"><span class="material-symbols-outlined nav-icon">dashboard</span></a>
+        <a href="/admin/analytics/files" class="nav-btn"><span class="material-symbols-outlined nav-icon">folder</span></a>
+        <a href="/admin/analytics/chats" class="nav-btn"><span class="material-symbols-outlined nav-icon">chat_bubble</span></a>
+        <div style="flex:1"></div>
+        <a href="/" class="nav-btn"><span class="material-symbols-outlined nav-icon">logout</span></a>
+    </nav>
+
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1>Dashboard</h1>
+                <p style="margin:5px 0 0; opacity:0.6;">System Overview & Health</p>
+            </div>
+            <div class="date-badge">{{ stats.last_updated }}</div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card" style="background: #e8def8; color: #1d192b;">
+                <span class="material-symbols-outlined card-icon">group</span>
+                <div class="card-val">{{ stats.total_users }}</div>
+                <div class="card-label">Total Patients</div>
+            </div>
+            <div class="card" style="background: #c2e7ff; color: #001d35;">
+                <span class="material-symbols-outlined card-icon">forum</span>
+                <div class="card-val">{{ stats.total_chats }}</div>
+                <div class="card-label">AI Sessions</div>
+            </div>
+            <div class="card" style="background: #c4eed0; color: #072711;">
+                <span class="material-symbols-outlined card-icon">cloud_done</span>
+                <div class="card-val">{{ stats.total_files }}</div>
+                <div class="card-label">Files Secure</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="activityChart"></canvas>
+        </div>
+
+        <div class="action-row">
+            <a href="/admin/analytics/files" class="big-btn">
+                <span class="material-symbols-outlined" style="font-size: 32px">folder_managed</span>
+                <div>
+                    <h3>Drive Manager</h3>
+                    <p>Access Cloud Vault</p>
+                </div>
+            </a>
+            <a href="/admin/analytics/chats" class="big-btn" style="background:#e8def8; color:#1d192b">
+                <span class="material-symbols-outlined" style="font-size: 32px">history_edu</span>
+                <div>
+                    <h3>Chat Audit</h3>
+                    <p>Review Logs</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Mock Chart Data - makes the dashboard look "alive"
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'AI Interactions',
+                    data: [12, 19, 3, 5, 2, 3, 15],
+                    borderColor: '#0b57d0',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(11, 87, 208, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>

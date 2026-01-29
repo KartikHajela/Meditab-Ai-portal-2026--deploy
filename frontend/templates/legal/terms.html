@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Meditab Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/legal_styles.css') }}">
+</head>
+<body>
+
+    <header class="legal-header">
+        <div class="brand-logo">
+            <svg width="24" height="24" viewBox="0 0 182 182" fill="currentColor"><path d="M136.049 66.771c9.257 15.264 23.296 22.4 31.356 15.938s7.091-24.074-2.166-39.337-23.296-22.4-31.357-15.938-7.09 24.074 2.167 39.337M165.22 138.727c-9.257 15.264-23.296 22.4-31.356 15.938s-7.09-24.073 2.167-39.337 23.296-22.4 31.356-15.937c8.06 6.461 7.09 24.073-2.167 39.336M90.646 143.945c17.241 0 31.825 8.082 31.825 18.613 0 10.873-14.188 19.442-31.43 19.442-17.24 0-31.27-8.155-31.27-19.027 0-10.532 13.634-19.028 30.875-19.028M91.042 0c17.241 0 31.825 8.082 31.825 18.613 0 10.872-14.188 19.442-31.43 19.442-17.24 0-31.27-8.156-31.27-19.028C60.167 8.496 73.8 0 91.042 0M16.762 138.727c9.257 15.264 23.295 22.4 31.356 15.938s7.09-24.073-2.167-39.337-23.296-22.4-31.356-15.937c-8.06 6.461-7.09 24.073 2.167 39.336M16.864 43.356c9.257-15.264 23.295-22.4 31.356-15.938s7.09 24.073-2.167 39.337-23.296 22.4-31.356 15.938-7.09-24.074 2.166-39.337"/></svg>
+            Meditab Portal
+        </div>
+        <a href="/?action=signup" class="btn-back">Close & Return</a>
+    </header>
+
+    <div class="legal-container">
+        <aside class="sidebar">
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#acceptance">1. Acceptance of Terms</a></li>
+                    <li class="nav-item"><a href="#medical-disclaimer">2. Medical Disclaimer</a></li>
+                    <li class="nav-item"><a href="#ai-services">3. AI & Voice Services</a></li>
+                    <li class="nav-item"><a href="#accounts">4. User Accounts</a></li>
+                    <li class="nav-item"><a href="#liability">5. Limitation of Liability</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-wrapper">
+            <h1>Terms of Service</h1>
+            <span class="last-updated">Last Updated: October 24, {{ current_year }}</span>
+
+            <p>Welcome to Meditab Portal. By accessing or using our AI-powered patient management platform ("Service"), you agree to be bound by these Terms of Service.</p>
+
+            <section id="acceptance">
+                <h2>1. Acceptance of Terms</h2>
+                <p>By creating an account, accessing, or using the Service, you confirm that you have read, understood, and agreed to these Terms. If you are entering into these Terms on behalf of a healthcare organization, you represent that you have the authority to bind that entity.</p>
+            </section>
+
+            <section id="medical-disclaimer">
+                <h2>2. Medical Disclaimer (Critical)</h2>
+                <div class="alert-box">
+                    <strong>Warning:</strong> Meditab Portal is an administrative and documentation aid. It is <u>not</u> a diagnostic tool.
+                </div>
+                <p>The Service, including its AI features, is designed to assist healthcare providers in documenting care and patients in summarizing symptoms. It does not provide medical advice, diagnosis, or treatment.</p>
+                <ul>
+                    <li><strong>For Patients:</strong> Never disregard professional medical advice or delay seeking it because of something you have read on this Service. In an emergency, call your local emergency number immediately.</li>
+                    <li><strong>For Providers:</strong> You retain full responsibility for all clinical decisions, diagnoses, and treatments. You must review and verify all AI-generated summaries before adding them to official medical records.</li>
+                </ul>
+            </section>
+
+            <section id="ai-services">
+                <h2>3. AI & Voice Services</h2>
+                <p>Our platform utilizes advanced Artificial Intelligence (including Gemini LLM and Speech-to-Text models) to process data.</p>
+                <ul>
+                    <li><strong>Accuracy:</strong> While we strive for high accuracy, AI models can hallucinate or misinterpret audio. Transcription errors may occur.</li>
+                    <li><strong>Data Processing:</strong> Voice inputs are transiently processed to generate text summaries. By using the voice feature, you consent to this processing as detailed in our Privacy Policy.</li>
+                </ul>
+            </section>
+
+            <section id="accounts">
+                <h2>4. User Accounts & Security</h2>
+                <p>You are responsible for safeguarding the password and Two-Factor Authentication (2FA) codes used to access the Service. You agree not to disclose your password to any third party.</p>
+                <p>Providers must ensure their use of the platform complies with their institution's data governance policies.</p>
+            </section>
+
+            <section id="liability">
+                <h2>5. Limitation of Liability</h2>
+                <p>To the maximum extent permitted by law, {{ company_name }} shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the Service.</p>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

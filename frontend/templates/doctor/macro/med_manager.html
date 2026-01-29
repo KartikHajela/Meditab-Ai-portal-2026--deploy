@@ -1,0 +1,70 @@
+{% macro render_med_manager() %}
+<div class="rx-container" style="display:flex; flex-direction:column; gap:24px;">
+    
+    <div class="suggestion-block">
+        <h4 style="margin:0 0 12px 0; color:var(--accent-purple); display:flex; align-items:center; gap:8px;">
+            <span class="material-symbols-rounded">auto_awesome</span> AI Recommendations
+        </h4>
+        <div class="rx-card-list" id="aiRxList">
+            <div class="rx-card ai-suggestion" id="sugg-1">
+                <div class="rx-info">
+                    <div class="rx-name">Aspirin</div>
+                    <div class="rx-dose">81mg • Oral • Daily</div>
+                    <div class="rx-reason">Protocol: Cardiac Prophylaxis</div>
+                </div>
+                <div class="rx-actions">
+                    <button class="rx-btn reject" onclick="app.rxReject('sugg-1')" title="Reject"><span class="material-symbols-rounded">close</span></button>
+                    <button class="rx-btn edit" onclick="app.rxEdit('sugg-1')" title="Edit"><span class="material-symbols-rounded">edit</span></button>
+                    <button class="rx-btn accept" onclick="app.rxAccept('sugg-1', 'Aspirin', '81mg')" title="Accept"><span class="material-symbols-rounded">check</span></button>
+                </div>
+            </div>
+             <div class="rx-card ai-suggestion" id="sugg-2">
+                <div class="rx-info">
+                    <div class="rx-name">Nitroglycerin</div>
+                    <div class="rx-dose">0.4mg • Sublingual • PRN</div>
+                    <div class="rx-reason">Protocol: Angina Relief</div>
+                </div>
+                <div class="rx-actions">
+                    <button class="rx-btn reject" onclick="app.rxReject('sugg-2')"><span class="material-symbols-rounded">close</span></button>
+                    <button class="rx-btn edit" onclick="app.rxEdit('sugg-2')"><span class="material-symbols-rounded">edit</span></button>
+                    <button class="rx-btn accept" onclick="app.rxAccept('sugg-2', 'Nitroglycerin', '0.4mg')"><span class="material-symbols-rounded">check</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="final-rx-block">
+        <h4 style="margin:0 0 12px 0;">Final Prescription Plan</h4>
+        <div id="finalRxList" style="min-height:100px; border:1px dashed var(--border); border-radius:12px; padding:12px; background:#f9fafb;">
+            <div style="text-align:center; color:var(--text-sub); font-size:0.85rem; margin-top:30px;">
+                Accept AI suggestions or add manually
+            </div>
+        </div>
+        
+        <div style="margin-top:12px; display:flex; gap:8px;">
+            <input type="text" id="manualDrug" placeholder="Drug Name" class="form-input" style="flex:2">
+            <input type="text" id="manualDose" placeholder="Dosage" class="form-input" style="flex:1">
+            <button class="mini-action-pill" onclick="app.addManualRx()">Add</button>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .rx-card { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 8px; transition: 0.2s; }
+    .rx-card.ai-suggestion { border-left: 3px solid var(--accent-purple); }
+    .rx-name { font-weight: 600; color: var(--text-main); }
+    .rx-dose { font-size: 0.85rem; color: var(--text-sub); }
+    .rx-reason { font-size: 0.75rem; color: var(--accent-purple); margin-top: 4px; font-style: italic; }
+    
+    .rx-actions { display: flex; gap: 8px; }
+    .rx-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .rx-btn.accept:hover { background: #dcfce7; border-color: #16a34a; color: #16a34a; }
+    .rx-btn.reject:hover { background: #fee2e2; border-color: #ef4444; color: #ef4444; }
+    .rx-btn.edit:hover { background: #e0f2fe; border-color: #0ea5e9; color: #0ea5e9; }
+    
+    .form-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
+</style>
+{% endmacro %}

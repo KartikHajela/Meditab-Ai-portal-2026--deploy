@@ -1,0 +1,223 @@
+{% macro render_auth_interface(client_id) %}
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<div class="auth-content">
+  <div id="view-login" class="auth-view active">
+    <div
+      id="g_id_onload"
+      data-client_id="{{ client_id }}"
+      data-context="signin"
+      data-ux_mode="popup"
+      data-callback="handleGoogleLogin"
+      data-auto_select="false"
+      data-auto_prompt="true"
+    ></div>
+
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input
+        type="email"
+        class="form-input"
+        id="loginEmail"
+        placeholder="name@example.com"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input
+        type="password"
+        class="form-input"
+        id="loginPass"
+        placeholder="••••••••"
+      />
+    </div>
+    <div style="text-align: right; margin-bottom: 20px">
+      <a
+        href="#"
+        onclick="toggleAuthView('forgot')"
+        style="font-size: 0.85rem; color: var(--primary); font-weight: 600"
+        >Forgot Password?</a
+      >
+    </div>
+
+    <button class="submit-btn" onclick="handleLogin()">Sign In</button>
+
+    <div class="auth-divider"><span>OR</span></div>
+
+    <div
+      class="g_id_signin"
+      data-type="standard"
+      data-shape="rectangular"
+      data-theme="outline"
+      data-text="continue_with"
+      data-size="large"
+      data-logo_alignment="left"
+      data-width="400"
+    ></div>
+
+    <!-- <button class="google-btn g_id_signin">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20">
+                    Continue with Google
+                </button> -->
+    <!-- <button class="google-btn">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20">
+                    Continue with Google
+                </button> -->
+
+    <div class="auth-footer">
+      Don't have an account?
+      <span class="auth-link" onclick="toggleAuthView('signup')">Sign Up</span>
+    </div>
+  </div>
+
+  <div id="view-signup" class="auth-view">
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input
+        type="text"
+        class="form-input"
+        id="signupName"
+        placeholder="John Doe"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input
+        type="email"
+        class="form-input"
+        id="signupEmail"
+        placeholder="name@example.com"
+      />
+    </div>
+
+    <div id="npi-container" class="form-group" style="display: none">
+      <label class="form-label">NPI / License Number</label>
+      <input
+        type="text"
+        class="form-input"
+        id="signupNPI"
+        placeholder="10-digit NPI"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Create Password</label>
+      <input
+        type="password"
+        class="form-input"
+        id="signupPass"
+        placeholder="••••••••"
+      />
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="checkBAA" />
+      <span class="checkbox-text">
+        I agree to the
+        <a href="/legal/terms" target="_blank">Terms of Service</a> and
+        acknowledge the
+        <a href="/legal/privacy-baa" target="_blank">BAA & Privacy Policy</a>.
+      </span>
+    </div>
+
+    <button class="submit-btn" onclick="handleSignup()">Create Account</button>
+
+    <div class="auth-footer">
+      Already have an account?
+      <span class="auth-link" onclick="toggleAuthView('login')">Sign In</span>
+    </div>
+  </div>
+
+  <div id="view-verify" class="auth-view">
+    <div class="form-group" style="text-align: center; margin-bottom: 24px">
+      <div
+        style="
+          width: 50px;
+          height: 50px;
+          background: #f0f9ff;
+          color: #0e7490;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 16px;
+        "
+      >
+        <span class="material-symbols-rounded">lock</span>
+      </div>
+      <h3 style="font-size: 1.2rem; color: #0f172a; margin-bottom: 8px">
+        Two-Factor Authentication
+      </h3>
+      <p style="font-size: 0.9rem; color: #64748b">
+        We sent a verification code to your device.<br />Please enter it below.
+      </p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" style="text-align: center">Secure Code</label>
+      <input
+        type="text"
+        id="otpInput"
+        class="form-input otp-field"
+        placeholder="0 0 0 0 0 0"
+        maxlength="6"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+      />
+    </div>
+
+    <button class="submit-btn" onclick="handleVerifyOTP()">
+      Verify & Login
+    </button>
+  </div>
+
+  <div id="view-forgot" class="auth-view">
+    <div class="form-group" style="text-align: center; margin-bottom: 20px">
+      <h3 style="font-size: 1.2rem; color: #0f172a">Reset Password</h3>
+      <p style="font-size: 0.9rem; color: #64748b">
+        Enter your email to receive a recovery link.
+      </p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input
+        type="email"
+        class="form-input"
+        id="forgotEmail"
+        placeholder="name@example.com"
+      />
+    </div>
+    <button class="submit-btn" onclick="handleForgotSubmit()">Send Link</button>
+    <div class="auth-footer">
+      <span class="auth-link" onclick="toggleAuthView('login')"
+        >Back to Login</span
+      >
+    </div>
+  </div>
+
+  <div id="view-reset" class="auth-view">
+    <div class="form-group" style="text-align: center; margin-bottom: 20px">
+      <h3 style="font-size: 1.2rem; color: #0f172a">Create New Password</h3>
+      <p style="font-size: 0.9rem; color: #64748b">
+        Please enter your new password below.
+      </p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input
+        type="password"
+        class="form-input"
+        id="newPass"
+        placeholder="••••••••"
+      />
+    </div>
+    <input type="hidden" id="resetToken" />
+
+    <button class="submit-btn" onclick="handleResetSubmit()">
+      Update Password
+    </button>
+  </div>
+</div>
+
+{% endmacro %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="{{ url_for('static', path='media/favicon.ico') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditab Portal - AI Patient Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="{{ url_for('static', path='css/home_styles.css') }}">
+</head>
+<body>
+    <div class="app-layout">
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="brand-title">
+            <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 182" aria-hidden="true">
+                <path d="M136.049 66.771c9.257 15.264 23.296 22.4 31.356 15.938s7.091-24.074-2.166-39.337-23.296-22.4-31.357-15.938-7.09 24.074 2.167 39.337M165.22 138.727c-9.257 15.264-23.296 22.4-31.356 15.938s-7.09-24.073 2.167-39.337 23.296-22.4 31.356-15.937c8.06 6.461 7.09 24.073-2.167 39.336M90.646 143.945c17.241 0 31.825 8.082 31.825 18.613 0 10.873-14.188 19.442-31.43 19.442-17.24 0-31.27-8.155-31.27-19.027 0-10.532 13.634-19.028 30.875-19.028M91.042 0c17.241 0 31.825 8.082 31.825 18.613 0 10.872-14.188 19.442-31.43 19.442-17.24 0-31.27-8.156-31.27-19.028C60.167 8.496 73.8 0 91.042 0M16.762 138.727c9.257 15.264 23.295 22.4 31.356 15.938s7.09-24.073-2.167-39.337-23.296-22.4-31.356-15.937c-8.06 6.461-7.09 24.073 2.167 39.336M16.864 43.356c9.257-15.264 23.295-22.4 31.356-15.938s7.09 24.073-2.167 39.337-23.296 22.4-31.356 15.938-7.09-24.074 2.166-39.337"/>
+            </svg>
+            <span>Meditab Portal</span>
+        </div>
+    </div>
+
+    <button class="new-chat-btn" onclick="startNewChat()">
+        <span class="material-symbols-outlined" style="font-size: 20px;">add</span> 
+        <span>New Chat</span>
+    </button>
+
+    <div class="sidebar-search">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" placeholder="Search chats..." oninput="handleSearch(this.value)">
+    </div>
+
+<div class="sidebar-scroll-content custom-scroll">
+        
+        <div class="history-container" id="historyList"></div>
+
+        <div class="sidebar-resizer" onmousedown="initResize(event, 'infoWidgetContent')">
+            <div class="resizer-line"></div>
+        </div>
+
+        <div class="files-widget collapsed" id="infoWidget">
+            <div class="files-header" onclick="toggleSection('infoWidget')">
+                <div class="group-label">Information</div>
+                <span class="material-symbols-outlined toggle-arrow">expand_more</span>
+            </div>
+            <div class="files-list info-content custom-scroll" id="infoWidgetContent">
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">local_hospital</span>
+                    <span class="file-name-small">City Hospital</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">science</span>
+                    <span class="file-name-small">Pathology Lab</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">medication</span>
+                    <span class="file-name-small">Pharmacy</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">call</span>
+                    <span class="file-name-small">Help: 108</span>
+                </div>
+                <div class="sidebar-file-item">
+                    <span class="material-symbols-outlined file-icon-small">ambulance</span>
+                    <span class="file-name-small">Amb: 911</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-resizer" onmousedown="initResize(event, 'sidebarFilesList')">
+            <div class="resizer-line"></div>
+        </div>
+
+        <div class="files-widget collapsed" id="filesWidget">
+            <div class="files-header" onclick="toggleSection('filesWidget')">
+                <div class="group-label">My Files</div>
+                <span class="material-symbols-outlined toggle-arrow">expand_more</span>
+            </div>
+            <div class="files-list custom-scroll" id="sidebarFilesList"></div>
+        </div>
+
+    </div> 
+
+    <button class="emergency-btn" onclick="triggerEmergency()">
+        <span class="material-symbols-outlined">e911_emergency</span>
+        Emergency
+    </button>
+
+    <div class="sidebar-footer">
+        <div class="user-profile" onclick="toggleProfile(event)">
+            <div class="avatar-small" id="sidebarAvatar">U</div>
+            <div style="font-size: 0.9rem; font-weight: 500;" id="sidebarName">User</div>
+        </div>
+    </div>
+</aside>
+
+<div id="emergencyModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-icon-header">
+            <span class="material-symbols-outlined" style="font-size: 40px; color: #d93025;">warning</span>
+        </div>
+        <h3>Emergency Request</h3>
+        <p>Do you really want to submit an emergency request?</p>
+        <div class="modal-actions">
+            <button class="modal-btn secondary" onclick="handleEmergencyResponse(false)">No, Cancel</button>
+            <button class="modal-btn primary" onclick="handleEmergencyResponse(true)">Yes, Submit</button>
+        </div>
+    </div>
+</div>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                        <span class="material-symbols-outlined">dock_to_left</span>
+                    </button>
+                    
+                    <div class="chat-title" id="currentChatTitle">
+                        <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-sub);">chat_bubble_outline</span>
+                        Project roadmap discussion
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="mobile-menu-btn" title="Share Chat">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">share</span>
+                    </button>
+                    
+                    <div class="header-avatar" onclick="toggleProfile(event)">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </div>
+                </div>
+
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-header">
+                        <div class="avatar-large" id="modalAvatar">
+                            <span class="material-symbols-outlined" style="font-size: 24px; color: white;">person</span>
+                        </div>
+                        <div class="dropdown-text">
+                            <div id="modalName">User</div>
+                            <small id="modalEmail">user@example.com</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <button class="dropdown-item" onclick="logout()">
+                        <span class="material-symbols-outlined">logout</span> Sign out
+                    </button>
+                </div>
+            </header>
+            {% from "macro/chat_interface.html" import render_chat_interface %}
+            {{ render_chat_interface() }}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', path='js/chat.js') }}"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>

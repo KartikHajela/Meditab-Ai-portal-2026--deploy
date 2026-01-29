@@ -1,0 +1,127 @@
+{% macro render_chat_interface() %}
+
+<div class="chat-scroll-area" id="mainScrollContainer">
+    
+    <div id="landing-hero" class="landing-container">
+        <div class="greeting-section">
+            <h1 class="gradient-text" id="greetingName">Hello, User</h1>
+            <h2 class="sub-greeting">How can I help you today?</h2>
+        </div>
+        
+<div class="suggestions-grid">
+    <div class="suggestion-card" onclick="sendMessage('Analyze recent blood work')">
+        <div class="sugg-text">Analyze blood work</div>
+        <div class="sugg-icon-box">🩸</div>
+    </div>
+    <div class="suggestion-card" onclick="sendMessage('Summarize patient history')">
+        <div class="sugg-text">Summarize history</div>
+        <div class="sugg-icon-box">📋</div>
+    </div>
+    <div class="suggestion-card" onclick="sendMessage('Draft a referral letter')">
+        <div class="sugg-text">Draft referral</div>
+        <div class="sugg-icon-box">✍️</div>
+    </div>
+    <div class="suggestion-card" onclick="sendMessage('Check drug interactions')">
+        <div class="sugg-text">Drug interactions</div>
+        <div class="sugg-icon-box">💊</div>
+    </div>
+    <div class="suggestion-card" onclick="sendMessage('Check drug interactions')">
+        <div class="sugg-text">Drug interactions</div>
+        <div class="sugg-icon-box">💊</div>
+    </div>
+    <div class="suggestion-card" onclick="sendMessage('Check drug interactions')">
+        <div class="sugg-text">Drug interactions</div>
+        <div class="sugg-icon-box">💊</div>
+    </div>
+</div>
+    </div>
+
+    <div id="chat-content" class="messages-area" style="display: none;"></div>
+    
+    <div style="flex-shrink: 0; height: 80px;"></div>
+</div>
+
+
+<div id="upload-manager" class="upload-toast">
+    <div class="toast-header">
+        <span id="um-title">Uploading...</span>
+        <button class="close-btn" onclick="closeUploadManager(event)">
+            <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+        </button>
+    </div>
+    <div class="toast-body" id="um-list"></div>
+</div>
+
+<div class="input-wrapper">
+  
+    <button id="scrollBottomBtn" class="scroll-bottom-btn" onclick="scrollToBottom(true)" title="Go to bottom">
+        <span class="material-symbols-outlined">arrow_downward</span>
+    </button>
+
+    <div id="autocompleteList" class="autocomplete-box"></div>
+
+<div class="input-card">
+    
+    <div id="attachmentArea" class="attachment-area"></div>
+
+    <div class="input-top-row">
+        <textarea 
+            id="chatInput" 
+            placeholder="Ask anything..." 
+            rows="1" 
+            oninput="handleInput(this)"
+        ></textarea>
+    </div>
+    
+    <input type="file" id="fileInput" style="display: none;" multiple>
+    <audio id="audioPreview" style="display:none;"></audio>
+
+    <div class="input-bottom-row">
+        <div class="toolbar-group">
+            <button class="add-btn" onclick="document.getElementById('fileInput').click()" title="Attach File">
+                <span class="material-symbols-outlined">add</span>
+            </button>
+            <button class="search-btn" title="Search Web">
+                <span class="material-symbols-outlined">public</span>
+            </button>
+        </div>
+        
+        <div class="toolbar-group" id="standardToolbar">
+            <button class="mic-btn" onclick="startRecording()" title="Use Microphone">
+                <span class="material-symbols-outlined">mic</span>
+            </button>
+            <button class="send-btn" id="mainSendBtn" title="Send Message" onclick="sendMessage()">
+                <span class="material-symbols-outlined">arrow_upward</span>
+            </button>
+        </div>
+
+        <div class="recording-controls" id="recordingControls" style="display: none;">
+            
+            <div class="rec-visualizer">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+
+            <div class="rec-timer">
+                <span class="rec-dot">●</span>
+                <span id="recTimerText">00:00</span>
+            </div>
+
+            <button class="rec-btn secondary" id="pauseRecBtn" onclick="togglePauseRecording()" title="Pause">
+                <span class="material-symbols-outlined">pause</span>
+            </button>
+
+            <button class="rec-btn cancel" onclick="cancelRecording()" title="Cancel">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <button class="rec-btn confirm" onclick="finishRecording()" title="Save Recording">
+                <span class="material-symbols-outlined">check</span>
+            </button>
+        </div>
+    </div>
+</div> 
+
+{% endmacro %}

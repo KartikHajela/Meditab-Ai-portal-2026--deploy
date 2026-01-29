@@ -1,0 +1,14 @@
+{
+    "terminal.integrated.profiles.windows": {
+        "AI Portal Env": {
+            "path": "cmd.exe",
+            "args": [
+                "/k",
+                "${workspaceFolder}\\app\\Scripts\\activate.bat"
+            ],
+            "icon": "terminal-cmd"
+        }
+    },
+    // This makes it the default behavior for this project
+    "terminal.integrated.defaultProfile.windows": "AI Portal Env"
+}
