@@ -47,7 +47,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 load_dotenv()
 
 # --- CONFIGURATION & CLIENTS ---
-GROQ_API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("gauth_api_key")
+GROQ_API_KEY = os.getenv("groq_api_key") or os.getenv("gauth_api_key")
 if not GROQ_API_KEY:
     raise ValueError("❌ Missing GROQ_API_KEY in .env file")
 
