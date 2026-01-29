@@ -13,6 +13,9 @@ import socket
 from email.message import EmailMessage
 from sqlalchemy.orm import Session
 import string
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- IPv4 Force Fix for Render ---
 class SMTP_SSL_IPv4(smtplib.SMTP_SSL):
@@ -123,8 +126,8 @@ def finalize_login(user, response: Response):
     }
 
 def send_otp_email(receiver_email: str, otp: str):
-    sender = "test2codee@gmail.com"
-    app_password = "snbl dnrk jwgv tman" # Provided credentials
+    sender = os.getenv("super_email_id")
+    app_password = os.getenv("super_email_send_password") # Provided credentials
 
     msg = EmailMessage()
     msg['Subject'] = 'Verification Code - Meditab'
@@ -162,8 +165,8 @@ def send_otp_email(receiver_email: str, otp: str):
         return False
 
 def send_reset_link(receiver_email: str, link: str):
-    sender = "test2codee@gmail.com"
-    app_password = "snbl dnrk jwgv tman" 
+    sender = os.getenv("super_email_id")
+    app_password = os.getenv("super_email_send_password") 
 
     msg = EmailMessage()
     msg['Subject'] = 'Reset Your Password - Meditab'
