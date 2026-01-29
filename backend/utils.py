@@ -142,8 +142,7 @@ def send_otp_email(receiver_email: str, otp: str):
     context = ssl.create_default_context()
 
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls(context=context)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(sender, app_password)
             server.send_message(msg)
         print(f"✅ OTP sent to {receiver_email}")
@@ -164,25 +163,24 @@ def send_reset_link(receiver_email: str, link: str):
     msg.set_content(f"Click here to reset your password: {link}")
 
     html_version = f"""
-    <html>
-        <body style="font-family: 'Inter', sans-serif; background-color: #f8fafc; padding: 20px;">
-            <div style="max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <h2 style="color: #0e7490; text-align: center; margin-top: 0;">Password Reset</h2>
-                <p style="color: #64748b; text-align: center;">You requested to reset your password. Click the button below to create a new one.</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="{link}" style="background-color: #0e7490; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Password</a>
+        <html>
+            <body style="font-family: 'Inter', sans-serif; background-color: #f8fafc; padding: 20px;">
+                <div style="max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <h2 style="color: #0e7490; text-align: center; margin-top: 0;">Password Reset</h2>
+                    <p style="color: #64748b; text-align: center;">You requested to reset your password. Click the button below to create a new one.</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                        <a href="{link}" style="background-color: #0e7490; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Password</a>
+                        </div>
+                    <p style="font-size: 12px; color: #94a3b8; text-align: center;">If you didn't ask for this, you can safely ignore this email.<br>Link expires in 15 minutes.</p>
                 </div>
-                <p style="font-size: 12px; color: #94a3b8; text-align: center;">If you didn't ask for this, you can safely ignore this email.<br>Link expires in 15 minutes.</p>
-            </div>
-        </body>
-    </html>
-    """
+            </body>
+        </html> """
+        
     msg.add_alternative(html_version, subtype='html')
 
     context = ssl.create_default_context()
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls(context=context)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(sender, app_password)
             server.send_message(msg)
         return True
